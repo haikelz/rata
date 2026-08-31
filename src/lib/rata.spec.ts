@@ -1,12 +1,51 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+	AJAIB_BUY_FEE_RATE,
+	AJAIB_SELL_FEE_RATE,
+	BROKERAGE_FIRMS,
 	STOCKBIT_BUY_FEE_RATE,
 	STOCKBIT_SELL_FEE_RATE,
 	calculateStockPurchase,
 	calculateStockSale,
 	calculateTargetAverage
 } from './rata';
+
+describe('brokerage firm rates', () => {
+	it('defines the published Ajaib regular-stock buy and sell fees', () => {
+		expect(BROKERAGE_FIRMS.ajaib).toEqual({
+			name: 'Ajaib',
+			buyFeeRate: AJAIB_BUY_FEE_RATE,
+			sellFeeRate: AJAIB_SELL_FEE_RATE
+		});
+		expect(AJAIB_BUY_FEE_RATE).toBe(0.001513);
+		expect(AJAIB_SELL_FEE_RATE).toBe(0.002513);
+	});
+
+	it('applies the Ajaib rates to purchase and sale estimates', () => {
+		const purchase = calculateStockPurchase({
+			currentLots: 297,
+			currentAveragePrice: 397,
+			currentMarketPrice: 342,
+			additionalLots: 39,
+			purchasePrice: 342,
+			buyFeeRate: BROKERAGE_FIRMS.ajaib.buyFeeRate
+		});
+		const sale = calculateStockSale({
+			currentLots: 297,
+			currentAveragePrice: 397,
+			saleLots: 39,
+			salePrice: 342,
+			sellFeeRate: BROKERAGE_FIRMS.ajaib.sellFeeRate
+		});
+
+		expect(purchase?.buyFee).toBeCloseTo(2_018.0394, 4);
+		expect(purchase?.cashRequired).toBeCloseTo(1_335_818.0394, 4);
+		expect(sale?.sellFee).toBeCloseTo(3_351.8394, 4);
+		expect(sale?.netProceeds).toBeCloseTo(1_330_448.1606, 4);
+		expect(sale?.realizedProfitLoss).toBeCloseTo(-217_851.8394, 4);
+	});
+});
 
 describe('calculateStockPurchase', () => {
 	it('calculates the example portfolio and Stockbit buy fee', () => {

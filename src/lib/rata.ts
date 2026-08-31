@@ -1,6 +1,29 @@
 export const LOT_SIZE = 100;
 export const STOCKBIT_BUY_FEE_RATE = 0.0015;
 export const STOCKBIT_SELL_FEE_RATE = 0.0025;
+export const AJAIB_BUY_FEE_RATE = 0.001513;
+export const AJAIB_SELL_FEE_RATE = 0.002513;
+
+export type BrokerageFirmId = 'stockbit' | 'ajaib';
+
+export type BrokerageFirm = {
+	name: string;
+	buyFeeRate: number;
+	sellFeeRate: number;
+};
+
+export const BROKERAGE_FIRMS: Record<BrokerageFirmId, BrokerageFirm> = {
+	stockbit: {
+		name: 'Stockbit',
+		buyFeeRate: STOCKBIT_BUY_FEE_RATE,
+		sellFeeRate: STOCKBIT_SELL_FEE_RATE
+	},
+	ajaib: {
+		name: 'Ajaib',
+		buyFeeRate: AJAIB_BUY_FEE_RATE,
+		sellFeeRate: AJAIB_SELL_FEE_RATE
+	}
+};
 
 export type StockPurchaseInput = {
 	currentLots: number;

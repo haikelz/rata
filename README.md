@@ -11,7 +11,8 @@ number of lots needed to reach a target average price.
 
 - Calculate the weighted average price after a planned purchase.
 - Convert lots to shares using the Indonesian market standard of 100 shares per lot.
-- Estimate Stockbit buy and sell fees, required buying power, and net sale proceeds.
+- Select Stockbit or Ajaib and apply its published regular-stock buy and sell fees.
+- Estimate required buying power and net sale proceeds after brokerage fees.
 - Project the final lot count, share count, invested value, and unrealized profit or loss.
 - Estimate realized profit or loss after a partial or complete sale.
 - Find the minimum whole-lot purchase required to reach a target average price.
@@ -30,7 +31,7 @@ final shares          = current shares + additional shares
 current investment    = current shares × current average price
 purchase value        = additional shares × purchase price
 final average price   = (current investment + purchase value) ÷ final shares
-buy fee               = purchase value × 0.15%
+buy fee               = purchase value × selected brokerage buy rate
 required buying power = purchase value + buy fee
 ```
 
@@ -39,7 +40,7 @@ For planned sales:
 ```text
 sold shares          = sale lots × 100
 sale value           = sold shares × sale price
-sell fee             = sale value × 0.25%
+sell fee             = sale value × selected brokerage sell rate
 net proceeds         = sale value − sell fee
 sold cost basis      = sold shares × current average price
 realized profit/loss = net proceeds − sold cost basis
@@ -51,18 +52,27 @@ excluded from the displayed purchase average and invested value. Realized profit
 the planned sell fee but excludes historical buy fees because they cannot be derived from the
 available inputs.
 
-### Stockbit Fee Assumptions
+### Brokerage Fee Assumptions
 
-The calculator applies the following Stockbit Sekuritas rates:
+The calculator applies the following published regular-stock rates:
 
-- Stock purchase fee: 0.15%
-- Stock sale fee: 0.25%
+| Brokerage | Buy fee | Sell fee |
+| --------- | ------: | -------: |
+| Stockbit  |   0.15% |    0.25% |
+| Ajaib     | 0.1513% |  0.2513% |
+
+Ajaib's published rates include its broker fee, the 0.0433% BEI/KPEI/KSEI levy, VAT on the broker
+fee, and the 0.1% final income tax on sales. Rata does not apply Ajaib's additional 0.1% Market
+Order fee or 0.25% forced-sell fee because order type is not an input.
 
 A Rp10,000 stamp duty may apply when the total daily transaction value exceeds Rp10 million. Rata
 does not add it automatically because eligibility depends on aggregate daily activity rather than
 a single planned order.
 
-See the official [Stockbit transaction fee documentation](https://help.stockbit.com/id/article/transaksi-saham-berapa-biaya-trading-di-stockbit-sekuritas-1lbkyq9/).
+Sources:
+
+- [Stockbit transaction fee documentation](https://help.stockbit.com/id/article/transaksi-saham-berapa-biaya-trading-di-stockbit-sekuritas-1lbkyq9/)
+- [Ajaib transaction fee documentation](https://ajaib.co.id/biaya)
 
 ## Technology Stack
 
@@ -131,7 +141,7 @@ moving Vite into production dependencies.
 
 ## Smoke Test
 
-The initial example uses the following values:
+The initial example uses Stockbit and the following values:
 
 | Input                  |    Value |
 | ---------------------- | -------: |
@@ -160,6 +170,16 @@ The sell tab uses the same current position with a planned sale of 39 lots at Rp
 | Estimated Stockbit sell fee    |     Rp3.335 |
 | Net proceeds                   | Rp1.330.466 |
 | Estimated realized profit/loss |  −Rp217.835 |
+
+Selecting Ajaib with the same example changes only the applicable brokerage fees:
+
+| Result                   |       Value |
+| ------------------------ | ----------: |
+| Estimated Ajaib buy fee  |     Rp2.018 |
+| Required buying power    | Rp1.335.818 |
+| Estimated Ajaib sell fee |     Rp3.352 |
+| Net sale proceeds        | Rp1.330.448 |
+| Estimated realized loss  |  −Rp217.852 |
 
 ## Project Structure
 

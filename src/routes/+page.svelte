@@ -3,8 +3,8 @@
 	import { page } from '$app/state';
 	import CalculatorTabs, { type CalculatorMode } from '$lib/CalculatorTabs.svelte';
 	import {
-		STOCKBIT_BUY_FEE_RATE,
-		STOCKBIT_SELL_FEE_RATE,
+		BROKERAGE_FIRMS,
+		type BrokerageFirmId,
 		calculateStockPurchase,
 		calculateStockSale,
 		calculateTargetAverage
@@ -12,7 +12,8 @@
 
 	const seoTitle = 'Kalkulator Harga Rata-rata, Beli & Jual Saham | Rata';
 	const seoDescription =
-		'Hitung harga rata-rata setelah beli, hasil penjualan, total lot, estimasi untung rugi, serta fee beli dan jual Stockbit langsung di browser.';
+		'Hitung harga rata-rata, hasil penjualan, total lot, estimasi untung rugi, serta fee beli dan jual Stockbit atau Ajaib langsung di browser secara gratis.';
+	const brokerageFirmIds: ReadonlyArray<BrokerageFirmId> = ['stockbit', 'ajaib'];
 	let canonicalUrl = $derived(new URL(resolve('/'), page.url).href);
 	let socialImageUrl = $derived(new URL(`${assets}/og-rata.webp`, page.url).href);
 	let structuredData = $derived({
@@ -35,8 +36,8 @@
 		},
 		featureList: [
 			'Kalkulator harga rata-rata saham',
-			'Estimasi fee beli Stockbit',
-			'Estimasi hasil jual dan fee jual Stockbit',
+			'Estimasi fee beli dan jual Stockbit',
+			'Estimasi fee beli dan jual Ajaib',
 			'Kalkulator target harga rata-rata',
 			'Estimasi untung rugi berjalan'
 		]
@@ -57,8 +58,14 @@
 		maximumFractionDigits: 2,
 		signDisplay: 'exceptZero'
 	});
+	const feeRateFormatter = new Intl.NumberFormat('id-ID', {
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 4
+	});
 
 	let calculatorMode = $state<CalculatorMode>('buy');
+	let brokerageFirmId = $state<BrokerageFirmId>('stockbit');
+	let brokerageFirm = $derived(BROKERAGE_FIRMS[brokerageFirmId]);
 	let currentLots = $state(297);
 	let currentAveragePrice = $state(397);
 	let currentMarketPrice = $state(342);
@@ -75,7 +82,7 @@
 			currentMarketPrice,
 			additionalLots,
 			purchasePrice,
-			buyFeeRate: STOCKBIT_BUY_FEE_RATE
+			buyFeeRate: brokerageFirm.buyFeeRate
 		})
 	);
 	let saleResult = $derived(
@@ -84,7 +91,7 @@
 			currentAveragePrice,
 			saleLots,
 			salePrice,
-			sellFeeRate: STOCKBIT_SELL_FEE_RATE
+			sellFeeRate: brokerageFirm.sellFeeRate
 		})
 	);
 	let saleLotsInvalid = $derived(
@@ -96,7 +103,7 @@
 			currentLots,
 			currentAveragePrice,
 			purchasePrice,
-			buyFeeRate: STOCKBIT_BUY_FEE_RATE,
+			buyFeeRate: brokerageFirm.buyFeeRate,
 			targetAveragePrice
 		})
 	);
@@ -107,6 +114,10 @@
 
 	function formatPrice(value: number): string {
 		return `Rp${priceFormatter.format(value)}`;
+	}
+
+	function formatFeeRate(rate: number): string {
+		return `${feeRateFormatter.format(rate * 100)}%`;
 	}
 
 	function resetExample(): void {
@@ -356,17 +367,37 @@
 					{/if}
 				</div>
 
+				<label class="form-control grid gap-2" for="brokerage-firm">
+					<span class="label-text font-medium text-base-content">Perusahaan sekuritas</span>
+					<select
+						id="brokerage-firm"
+						class="select-bordered select min-h-11 w-full"
+						bind:value={brokerageFirmId}
+					>
+						{#each brokerageFirmIds as firmId (firmId)}
+							<option value={firmId}>{BROKERAGE_FIRMS[firmId].name}</option>
+						{/each}
+					</select>
+				</label>
+
 				<div class="flex items-center justify-between border border-base-300 bg-base-200 px-4 py-3">
 					<div>
-						<p class="text-sm font-medium text-base-content">Stockbit Sekuritas</p>
+						<p class="text-sm font-medium text-base-content">{brokerageFirm.name}</p>
 						<p class="mt-0.5 text-xs text-base-content/65">
 							Fee {calculatorMode === 'buy' ? 'beli' : 'jual'}
 						</p>
 					</div>
 					<p class="numeric font-medium text-base-content">
-						{calculatorMode === 'buy' ? '0,15%' : '0,25%'}
+						{formatFeeRate(
+							calculatorMode === 'buy' ? brokerageFirm.buyFeeRate : brokerageFirm.sellFeeRate
+						)}
 					</p>
 				</div>
+				{#if brokerageFirmId === 'ajaib'}
+					<p class="text-xs leading-5 text-base-content/65">
+						Tarif reguler. Tambahan fee Market Order 0,1% dan forced sell 0,25% tidak dihitung.
+					</p>
+				{/if}
 			</fieldset>
 		</form>
 
@@ -445,7 +476,10 @@
 									<dd class="numeric text-base-content">{formatRupiah(result.purchaseValue)}</dd>
 								</div>
 								<div class="flex items-center justify-between gap-4">
-									<dt class="text-base-content/60">Fee beli Stockbit 0,15%</dt>
+									<dt class="text-base-content/60">
+										Fee beli {brokerageFirm.name}
+										{formatFeeRate(brokerageFirm.buyFeeRate)}
+									</dt>
 									<dd class="numeric text-base-content">{formatRupiah(result.buyFee)}</dd>
 								</div>
 								<div
@@ -545,7 +579,10 @@
 									</dd>
 								</div>
 								<div class="flex items-center justify-between gap-4">
-									<dt class="text-base-content/60">Fee jual Stockbit 0,25%</dt>
+									<dt class="text-base-content/60">
+										Fee jual {brokerageFirm.name}
+										{formatFeeRate(brokerageFirm.sellFeeRate)}
+									</dt>
 									<dd class="numeric text-base-content">
 										−{formatRupiah(saleResult.sellFee)}
 									</dd>
@@ -562,8 +599,8 @@
 						</div>
 
 						<p class="mt-7 text-xs leading-5 text-base-content/65">
-							Estimasi P/L terealisasi sudah mengurangi fee jual, tetapi tidak menyertakan fee beli
-							historis, pajak, atau biaya lain yang tidak tersedia dari input.
+							Estimasi P/L terealisasi sudah mengurangi fee jual terpilih, tetapi tidak menyertakan
+							fee beli historis, materai, atau biaya lain di luar tarif tersebut.
 						</p>
 					{/if}
 				{/if}
@@ -679,16 +716,16 @@
 			<div class="mt-4 border border-base-300 bg-base-200/35 p-5">
 				<p class="text-sm font-medium text-base-content">Rumus dana bersih penjualan</p>
 				<p class="numeric mt-3 overflow-x-auto text-sm leading-6 text-base-content/70">
-					(lot jual × 100 × harga jual) − (nilai penjualan × 0,25%)
+					(lot jual × 100 × harga jual) − (nilai penjualan × fee jual sekuritas)
 				</p>
 			</div>
 
 			<p class="mt-6 text-sm leading-6 text-base-content/65">
 				Rata menggunakan kedua rumus tersebut untuk menghitung posisi akhir, kebutuhan dana, hasil
 				jual bersih, serta estimasi untung atau rugi. Penjualan sebagian tidak mengubah harga
-				rata-rata saham yang tersisa. Fee beli 0,15% ditambahkan ke kebutuhan dana, sedangkan fee
-				jual 0,25% dikurangi dari hasil penjualan. Semua perhitungan berlangsung di browser; data
-				portofolio tidak dikirim atau disimpan.
+				rata-rata saham yang tersisa. Fee beli dari sekuritas pilihan ditambahkan ke kebutuhan dana,
+				sedangkan fee jualnya dikurangi dari hasil penjualan. Semua perhitungan berlangsung di
+				browser; data portofolio tidak dikirim atau disimpan.
 			</p>
 			<p class="mt-4 text-xs leading-5 text-base-content/60">
 				Hasil merupakan estimasi untuk perencanaan, bukan rekomendasi investasi. Cocokkan kembali
@@ -700,22 +737,61 @@
 	<section aria-labelledby="fee-notes-heading" class="px-4 py-10 sm:px-8 lg:px-12">
 		<div class="max-w-3xl">
 			<h2 id="fee-notes-heading" class="text-lg font-medium text-base-content">
-				Tentang biaya Stockbit
+				Tentang biaya sekuritas
 			</h2>
 			<p class="mt-3 text-sm leading-6 text-base-content/60">
-				Kalkulator menerapkan fee beli saham 0,15% dan fee jual 0,25%. Bea materai Rp10.000 dapat
-				berlaku jika total nilai transaksi harian di atas Rp10 juta, sehingga tidak ditambahkan
-				otomatis pada satu simulasi order.
+				Rata menggunakan tarif reguler yang dipublikasikan masing-masing sekuritas. Tarif Ajaib
+				sudah mencakup biaya broker, levy, PPN biaya broker, dan PPh final transaksi jual. Tambahan
+				fee Ajaib untuk Market Order 0,1% dan forced sell 0,25% tidak diterapkan.
 			</p>
-			<a
-				class="mt-4 inline-flex min-h-11 link items-center text-sm font-medium text-base-content underline-offset-4"
-				href="https://help.stockbit.com/id/article/transaksi-saham-berapa-biaya-trading-di-stockbit-sekuritas-1lbkyq9/"
-				target="_blank"
-				rel="noreferrer"
-			>
-				Lihat sumber biaya Stockbit
-			</a>
-			<p class="mt-1 text-xs text-base-content/60">Sumber diperbarui 5 Agustus 2026.</p>
+
+			<div class="mt-6 overflow-x-auto border border-base-300">
+				<table class="w-full text-left text-sm">
+					<thead class="border-b border-base-300 bg-base-200 text-base-content/65">
+						<tr>
+							<th class="px-4 py-3 font-medium" scope="col">Sekuritas</th>
+							<th class="numeric px-4 py-3 font-medium" scope="col">Fee beli</th>
+							<th class="numeric px-4 py-3 font-medium" scope="col">Fee jual</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="border-b border-base-300">
+							<th class="px-4 py-3 font-medium text-base-content" scope="row">Stockbit</th>
+							<td class="numeric px-4 py-3 text-base-content/70">0,15%</td>
+							<td class="numeric px-4 py-3 text-base-content/70">0,25%</td>
+						</tr>
+						<tr>
+							<th class="px-4 py-3 font-medium text-base-content" scope="row">Ajaib</th>
+							<td class="numeric px-4 py-3 text-base-content/70">0,1513%</td>
+							<td class="numeric px-4 py-3 text-base-content/70">0,2513%</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<p class="mt-5 text-sm leading-6 text-base-content/60">
+				Bea materai Rp10.000 dapat berlaku jika total nilai transaksi harian di atas Rp10 juta,
+				sehingga tidak ditambahkan otomatis pada satu simulasi order.
+			</p>
+			<div class="mt-4 flex flex-wrap gap-x-6">
+				<a
+					class="inline-flex min-h-11 link items-center text-sm font-medium text-base-content underline-offset-4"
+					href="https://help.stockbit.com/id/article/transaksi-saham-berapa-biaya-trading-di-stockbit-sekuritas-1lbkyq9/"
+					target="_blank"
+					rel="noreferrer"
+				>
+					Lihat sumber biaya Stockbit
+				</a>
+				<a
+					class="inline-flex min-h-11 link items-center text-sm font-medium text-base-content underline-offset-4"
+					href="https://ajaib.co.id/biaya"
+					target="_blank"
+					rel="noreferrer"
+				>
+					Lihat sumber biaya Ajaib
+				</a>
+			</div>
+			<p class="mt-1 text-xs text-base-content/60">Tarif diperiksa 31 Agustus 2026.</p>
 		</div>
 	</section>
 </main>
