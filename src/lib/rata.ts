@@ -1,5 +1,6 @@
 export const LOT_SIZE = 100;
 export const STOCKBIT_BUY_FEE_RATE = 0.0015;
+export const STOCKBIT_SELL_FEE_RATE = 0.0025;
 
 export type StockPurchaseInput = {
 	currentLots: number;
@@ -24,6 +25,28 @@ export type StockPurchaseResult = {
 	marketValue: number;
 	unrealizedProfitLoss: number;
 	unrealizedProfitLossPercentage: number;
+};
+
+export type StockSaleInput = {
+	currentLots: number;
+	currentAveragePrice: number;
+	saleLots: number;
+	salePrice: number;
+	sellFeeRate: number;
+};
+
+export type StockSaleResult = {
+	soldShares: number;
+	soldCostBasis: number;
+	saleValue: number;
+	sellFee: number;
+	netProceeds: number;
+	realizedProfitLoss: number;
+	realizedProfitLossPercentage: number;
+	remainingLots: number;
+	remainingShares: number;
+	remainingAveragePrice: number;
+	remainingInvestmentValue: number;
 };
 
 export type TargetAverageInput = Pick<
@@ -103,6 +126,50 @@ export function calculateStockPurchase(input: StockPurchaseInput): StockPurchase
 		marketValue,
 		unrealizedProfitLoss,
 		unrealizedProfitLossPercentage
+	};
+}
+
+export function calculateStockSale(input: StockSaleInput): StockSaleResult | undefined {
+	const isValidInput =
+		isValidLotAmount(input.currentLots) &&
+		input.currentLots > 0 &&
+		isValidLotAmount(input.saleLots) &&
+		input.saleLots <= input.currentLots &&
+		input.currentAveragePrice > 0 &&
+		Number.isFinite(input.currentAveragePrice) &&
+		input.salePrice > 0 &&
+		Number.isFinite(input.salePrice) &&
+		isFiniteNonNegative(input.sellFeeRate);
+
+	if (!isValidInput) {
+		return undefined;
+	}
+
+	const soldShares = input.saleLots * LOT_SIZE;
+	const soldCostBasis = soldShares * input.currentAveragePrice;
+	const saleValue = soldShares * input.salePrice;
+	const sellFee = saleValue * input.sellFeeRate;
+	const netProceeds = saleValue - sellFee;
+	const realizedProfitLoss = netProceeds - soldCostBasis;
+	const realizedProfitLossPercentage =
+		soldCostBasis === 0 ? 0 : (realizedProfitLoss / soldCostBasis) * 100;
+	const remainingLots = input.currentLots - input.saleLots;
+	const remainingShares = remainingLots * LOT_SIZE;
+	const remainingAveragePrice = remainingShares === 0 ? 0 : input.currentAveragePrice;
+	const remainingInvestmentValue = remainingShares * remainingAveragePrice;
+
+	return {
+		soldShares,
+		soldCostBasis,
+		saleValue,
+		sellFee,
+		netProceeds,
+		realizedProfitLoss,
+		realizedProfitLossPercentage,
+		remainingLots,
+		remainingShares,
+		remainingAveragePrice,
+		remainingInvestmentValue
 	};
 }
 

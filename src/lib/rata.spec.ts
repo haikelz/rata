@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { STOCKBIT_BUY_FEE_RATE, calculateStockPurchase, calculateTargetAverage } from './rata';
+import {
+	STOCKBIT_BUY_FEE_RATE,
+	STOCKBIT_SELL_FEE_RATE,
+	calculateStockPurchase,
+	calculateStockSale,
+	calculateTargetAverage
+} from './rata';
 
 describe('calculateStockPurchase', () => {
 	it('calculates the example portfolio and Stockbit buy fee', () => {
@@ -36,6 +42,68 @@ describe('calculateStockPurchase', () => {
 			additionalLots: 1,
 			purchasePrice: 450,
 			buyFeeRate: STOCKBIT_BUY_FEE_RATE
+		});
+
+		expect(result).toBeUndefined();
+	});
+});
+
+describe('calculateStockSale', () => {
+	it('calculates a partial sale, Stockbit sell fee, and realized profit or loss', () => {
+		const result = calculateStockSale({
+			currentLots: 297,
+			currentAveragePrice: 397,
+			saleLots: 39,
+			salePrice: 342,
+			sellFeeRate: STOCKBIT_SELL_FEE_RATE
+		});
+
+		expect(result).toEqual(
+			expect.objectContaining({
+				soldShares: 3_900,
+				soldCostBasis: 1_548_300,
+				saleValue: 1_333_800,
+				sellFee: 3_334.5,
+				netProceeds: 1_330_465.5,
+				realizedProfitLoss: -217_834.5,
+				remainingLots: 258,
+				remainingShares: 25_800,
+				remainingAveragePrice: 397,
+				remainingInvestmentValue: 10_242_600
+			})
+		);
+		expect(result?.realizedProfitLossPercentage).toBeCloseTo(-14.06927, 5);
+	});
+
+	it('closes the position when all lots are sold', () => {
+		const result = calculateStockSale({
+			currentLots: 10,
+			currentAveragePrice: 500,
+			saleLots: 10,
+			salePrice: 550,
+			sellFeeRate: STOCKBIT_SELL_FEE_RATE
+		});
+
+		expect(result).toEqual(
+			expect.objectContaining({
+				netProceeds: 548_625,
+				realizedProfitLoss: 48_625,
+				remainingLots: 0,
+				remainingShares: 0,
+				remainingAveragePrice: 0,
+				remainingInvestmentValue: 0
+			})
+		);
+		expect(result?.realizedProfitLossPercentage).toBeCloseTo(9.725, 3);
+	});
+
+	it('rejects a sale larger than the current position', () => {
+		const result = calculateStockSale({
+			currentLots: 10,
+			currentAveragePrice: 500,
+			saleLots: 11,
+			salePrice: 550,
+			sellFeeRate: STOCKBIT_SELL_FEE_RATE
 		});
 
 		expect(result).toBeUndefined();

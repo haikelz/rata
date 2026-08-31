@@ -1,20 +1,21 @@
 # Rata
 
-Rata is a client-side stock purchase calculator for Indonesian equities. It helps investors
-estimate the effect of a planned purchase before submitting an order to their broker.
+Rata is a client-side stock transaction calculator for Indonesian equities. It helps investors
+estimate the effect of a planned purchase or sale before submitting an order to their broker.
 
-The application calculates the post-purchase average price, total position size, invested value,
-estimated unrealized profit or loss, required buying power, and the minimum number of lots needed
-to reach a target average price.
+The application calculates the post-purchase average price, position size, invested value,
+required buying power, net sale proceeds, realized and unrealized profit or loss, and the minimum
+number of lots needed to reach a target average price.
 
 ## Features
 
 - Calculate the weighted average price after a planned purchase.
 - Convert lots to shares using the Indonesian market standard of 100 shares per lot.
-- Estimate the order value, Stockbit purchase fee, and total required buying power.
+- Estimate Stockbit buy and sell fees, required buying power, and net sale proceeds.
 - Project the final lot count, share count, invested value, and unrealized profit or loss.
+- Estimate realized profit or loss after a partial or complete sale.
 - Find the minimum whole-lot purchase required to reach a target average price.
-- Reject non-positive prices and fractional lot quantities.
+- Reject non-positive prices, fractional lots, and sales larger than the current position.
 - Keep all portfolio data and calculations in the browser.
 - Support responsive layouts, keyboard navigation, and system light or dark mode.
 
@@ -33,16 +34,29 @@ buy fee               = purchase value × 0.15%
 required buying power = purchase value + buy fee
 ```
 
-Transaction fees are excluded from the displayed average price, invested value, and unrealized
-profit or loss. The planned purchase fee is shown separately because historical transaction fees
-cannot be derived from the available inputs.
+For planned sales:
+
+```text
+sold shares          = sale lots × 100
+sale value           = sold shares × sale price
+sell fee             = sale value × 0.25%
+net proceeds         = sale value − sell fee
+sold cost basis      = sold shares × current average price
+realized profit/loss = net proceeds − sold cost basis
+remaining lots       = current lots − sale lots
+```
+
+A partial sale does not change the average price of the remaining shares. Transaction fees are
+excluded from the displayed purchase average and invested value. Realized profit or loss includes
+the planned sell fee but excludes historical buy fees because they cannot be derived from the
+available inputs.
 
 ### Stockbit Fee Assumptions
 
 The calculator applies the following Stockbit Sekuritas rates:
 
 - Stock purchase fee: 0.15%
-- Stock sale fee: 0.25%, displayed for reference but not included in purchase simulations
+- Stock sale fee: 0.25%
 
 A Rp10,000 stamp duty may apply when the total daily transaction value exceeds Rp10 million. Rata
 does not add it automatically because eligibility depends on aggregate daily activity rather than
@@ -137,13 +151,24 @@ Expected results:
 | Estimated Stockbit buy fee |      Rp2.001 |
 | Required buying power      |  Rp1.335.801 |
 
+The sell tab uses the same current position with a planned sale of 39 lots at Rp342:
+
+| Result                         |       Value |
+| ------------------------------ | ----------: |
+| Remaining position             |    258 lots |
+| Gross sale value               | Rp1.333.800 |
+| Estimated Stockbit sell fee    |     Rp3.335 |
+| Net proceeds                   | Rp1.330.466 |
+| Estimated realized profit/loss |  −Rp217.835 |
+
 ## Project Structure
 
 ```text
 src/
 ├── lib/
-│   ├── rata.ts           # Pure financial calculation functions
-│   └── rata.spec.ts      # Formula and boundary unit tests
+│   ├── CalculatorTabs.svelte  # Accessible transaction-mode tabs
+│   ├── rata.ts                # Pure financial calculation functions
+│   └── rata.spec.ts           # Formula and boundary unit tests
 └── routes/
     ├── +page.svelte      # Calculator interface and client state
     └── layout.css        # Tailwind, daisyUI themes, and design tokens
