@@ -1,6 +1,39 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
+	import { assets, resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import { STOCKBIT_BUY_FEE_RATE, calculateStockPurchase, calculateTargetAverage } from '$lib/rata';
+
+	const seoTitle = 'Kalkulator Harga Rata-rata Saham & Fee Stockbit | Rata';
+	const seoDescription =
+		'Hitung harga rata-rata saham setelah beli, total lot, kebutuhan dana, estimasi untung rugi, dan fee beli Stockbit 0,15% langsung di browser.';
+	let canonicalUrl = $derived(new URL(resolve('/'), page.url).href);
+	let socialImageUrl = $derived(new URL(`${assets}/og-rata.webp`, page.url).href);
+	let structuredData = $derived({
+		'@context': 'https://schema.org',
+		'@type': 'WebApplication',
+		name: 'Rata',
+		alternateName: 'Kalkulator Rata-rata Saham',
+		url: canonicalUrl,
+		image: socialImageUrl,
+		description: seoDescription,
+		applicationCategory: 'FinanceApplication',
+		operatingSystem: 'Any',
+		browserRequirements: 'Requires JavaScript',
+		inLanguage: 'id-ID',
+		isAccessibleForFree: true,
+		offers: {
+			'@type': 'Offer',
+			price: '0',
+			priceCurrency: 'IDR'
+		},
+		featureList: [
+			'Kalkulator harga rata-rata saham',
+			'Estimasi fee beli Stockbit',
+			'Kalkulator target harga rata-rata',
+			'Estimasi untung rugi berjalan'
+		]
+	});
+	let structuredDataJson = $derived(JSON.stringify(structuredData).replaceAll('<', '\\u003c'));
 
 	const rupiahFormatter = new Intl.NumberFormat('id-ID', {
 		style: 'currency',
@@ -63,11 +96,31 @@
 </script>
 
 <svelte:head>
-	<title>Rata - Kalkulator Rata-rata Saham</title>
-	<meta
-		name="description"
-		content="Hitung perubahan harga rata-rata, total lot, nilai investasi, dan fee beli Stockbit sebelum membeli saham."
-	/>
+	<title>{seoTitle}</title>
+	<meta name="description" content={seoDescription} />
+	<meta name="robots" content="index, follow, max-image-preview:large" />
+	<meta name="theme-color" content="#f5f5f5" />
+	<link rel="canonical" href={canonicalUrl} />
+
+	<meta property="og:type" content="website" />
+	<meta property="og:locale" content="id_ID" />
+	<meta property="og:site_name" content="Rata" />
+	<meta property="og:title" content={seoTitle} />
+	<meta property="og:description" content={seoDescription} />
+	<meta property="og:url" content={canonicalUrl} />
+	<meta property="og:image" content={socialImageUrl} />
+	<meta property="og:image:type" content="image/webp" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Rata, kalkulator harga rata-rata saham dan fee beli" />
+
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={seoTitle} />
+	<meta name="twitter:description" content={seoDescription} />
+	<meta name="twitter:image" content={socialImageUrl} />
+	<meta name="twitter:image:alt" content="Rata, kalkulator harga rata-rata saham dan fee beli" />
+
+	<svelte:element this={"script"} type="application/ld+json">{structuredDataJson}</svelte:element>
 </svelte:head>
 
 <a class="skip-link" href="#main-content">Lewati ke kalkulator</a>
@@ -93,7 +146,7 @@
 			<h1
 				class="text-4xl leading-[1.05] font-medium tracking-[-0.045em] text-base-content sm:text-5xl"
 			>
-				Rata-rata, sebelum beli.
+				Kalkulator rata-rata saham
 			</h1>
 			<p class="mt-5 max-w-xl text-lg leading-7 text-base-content/65">
 				Simulasikan lot, harga rata-rata, dan dana yang dibutuhkan sebelum mengirim order beli di
@@ -392,6 +445,47 @@
 				</div>
 			</div>
 		</details>
+	</section>
+
+	<section
+		id="cara-hitung"
+		aria-labelledby="calculation-guide-heading"
+		class="border-b border-base-300 px-4 py-10 sm:px-8 lg:px-12"
+	>
+		<article class="max-w-3xl">
+			<p class="text-xs font-medium tracking-wider text-primary uppercase">Panduan singkat</p>
+			<h2
+				id="calculation-guide-heading"
+				class="mt-3 text-2xl font-medium tracking-tight text-base-content"
+			>
+				Cara menghitung harga rata-rata saham setelah beli
+			</h2>
+			<p class="mt-4 text-sm leading-6 text-base-content/65">
+				Harga rata-rata baru adalah rata-rata tertimbang, bukan rata-rata sederhana dari dua harga.
+				Setiap harga diberi bobot sesuai jumlah saham yang dimiliki atau dibeli. Di Bursa Efek
+				Indonesia, 1 lot setara dengan 100 lembar saham.
+			</p>
+
+			<div class="mt-6 border border-base-300 bg-base-200/35 p-5">
+				<p class="text-sm font-medium text-base-content">Rumus harga rata-rata baru</p>
+				<p class="numeric mt-3 overflow-x-auto text-sm leading-6 text-base-content/70">
+					((lot lama × 100 × harga rata-rata lama) + (lot beli × 100 × harga beli)) ÷ ((lot lama +
+					lot beli) × 100)
+				</p>
+			</div>
+
+			<p class="mt-6 text-sm leading-6 text-base-content/65">
+				Rata menggunakan rumus tersebut untuk menghitung posisi akhir, nilai investasi, dan estimasi
+				untung atau rugi berjalan. Fee beli Stockbit 0,15% ditambahkan ke kebutuhan dana, tetapi
+				tidak dimasukkan ke harga rata-rata karena biaya transaksi historis tidak tersedia dari
+				input. Semua perhitungan berlangsung di browser; data portofolio tidak dikirim atau
+				disimpan.
+			</p>
+			<p class="mt-4 text-xs leading-5 text-base-content/60">
+				Hasil merupakan estimasi untuk perencanaan, bukan rekomendasi investasi. Cocokkan kembali
+				nilai order dan biaya yang berlaku dengan broker sebelum bertransaksi.
+			</p>
+		</article>
 	</section>
 
 	<section aria-labelledby="fee-notes-heading" class="px-4 py-10 sm:px-8 lg:px-12">
