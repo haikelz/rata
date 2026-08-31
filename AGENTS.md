@@ -1,21 +1,44 @@
-# Agent Guide
+# Repository Guidelines
 
-## Commands
+## Project Overview
 
-- Install: `bun install --frozen-lockfile`
-- Develop: `bun run dev`
-- Format and lint check: `bun run lint`
-- Type and Svelte check: `bun run check`
-- Unit tests: `bun run test`
-- Production build: `bun run build`
+Rata is a client-side stock purchase calculator built with SvelteKit, TypeScript, Tailwind CSS, and
+daisyUI. Portfolio inputs must remain local to the browser. The application has no persistence,
+analytics, or transaction-submission layer.
 
-Use Bun only and keep `bun.lock` authoritative.
+## Canonical Commands
 
-## Boundaries
+- Install dependencies: `bun install --frozen-lockfile`
+- Start development: `bun run dev`
+- Check formatting and lint: `bun run lint`
+- Check Svelte and TypeScript: `bun run check`
+- Run unit tests: `bun run test`
+- Build for production: `bun run build`
 
-- Keep financial calculations as pure functions in `src/lib/rata.ts`.
+Use Bun exclusively and treat `bun.lock` as authoritative.
+
+## Architecture
+
+- Keep financial formulas as pure functions in `src/lib/rata.ts`.
+- Keep formula and boundary tests in `src/lib/rata.spec.ts`.
 - Keep route state and presentation in `src/routes/+page.svelte`.
-- Calculations must remain client-side. Do not add persistence, analytics, or network submission.
-- Use daisyUI components and semantic theme tokens from `src/routes/layout.css`.
-- Preserve Indonesian copy, native form semantics, visible focus, and reduced-motion behavior.
-- Add or update unit tests whenever formulas, lot rounding, or fee handling change.
+- Keep global design tokens and daisyUI themes in `src/routes/layout.css`.
+- Do not add network requests, storage, analytics, or server-side portfolio processing.
+- Avoid speculative abstractions, stores, services, or directories.
+
+## Implementation Standards
+
+- Use strict TypeScript without `any`, unchecked assertions, or weakened compiler settings.
+- Preserve Indonesian interface copy unless a product requirement explicitly changes the locale.
+- Use native semantic controls, visible focus states, complete labels, and keyboard-accessible flows.
+- Preserve responsive behavior, system light and dark modes, and reduced-motion support.
+- Use daisyUI components and semantic theme tokens rather than hard-coded component colors.
+- Keep calculations deterministic and independent of browser APIs.
+
+## Verification Requirements
+
+- Add or update unit tests whenever formulas, validation, lot rounding, or fee handling change.
+- Run `bun run lint`, `bun run check`, `bun run test`, and `bun run build` before completing code
+  changes.
+- Render interface changes at desktop and mobile widths and verify keyboard and accessibility
+  behavior.
