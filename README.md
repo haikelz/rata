@@ -99,6 +99,22 @@ bun run build
 
 The same checks run in GitHub Actions for pushes to `main` and pull requests.
 
+## Deploying to Cloudflare Pages
+
+Use the following Cloudflare Pages build configuration:
+
+| Setting                | Value                    |
+| ---------------------- | ------------------------ |
+| Framework preset       | SvelteKit                |
+| Build command          | `bun run build`          |
+| Build output directory | `.svelte-kit/cloudflare` |
+| Root directory         | Repository root          |
+
+Set `BUN_VERSION` to `1.3.11` in the Pages environment variables. The build script performs a
+frozen Bun install before invoking Vite because Cloudflare Pages may not automatically detect the
+text-based `bun.lock` format. This guarantees that build-time dependencies are present without
+moving Vite into production dependencies.
+
 ## Smoke Test
 
 The initial example uses the following values:
