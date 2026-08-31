@@ -1,0 +1,189 @@
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+@import 'tailwindcss';
+
+@plugin 'daisyui' {
+	themes:
+		rata --default,
+		rata-dark --prefersdark;
+	logs: false;
+}
+
+@plugin 'daisyui/theme' {
+	name: 'rata';
+	default: true;
+	prefersdark: false;
+	color-scheme: light;
+	--color-base-100: oklch(97% 0 0);
+	--color-base-200: oklch(94% 0 0);
+	--color-base-300: oklch(87% 0 0);
+	--color-base-content: oklch(17.5% 0 0);
+	--color-primary: oklch(47% 0.105 157);
+	--color-primary-content: oklch(98% 0.008 157);
+	--color-secondary: oklch(35% 0.012 250);
+	--color-secondary-content: oklch(98% 0 0);
+	--color-accent: oklch(47% 0.105 157);
+	--color-accent-content: oklch(98% 0.008 157);
+	--color-neutral: oklch(23% 0 0);
+	--color-neutral-content: oklch(96% 0 0);
+	--color-info: oklch(55% 0.13 245);
+	--color-info-content: oklch(98% 0.01 245);
+	--color-success: oklch(47% 0.105 157);
+	--color-success-content: oklch(98% 0.008 157);
+	--color-warning: oklch(55% 0.12 75);
+	--color-warning-content: oklch(98% 0.01 75);
+	--color-error: oklch(51% 0.18 27);
+	--color-error-content: oklch(98% 0.01 27);
+	--radius-selector: 0rem;
+	--radius-field: 0rem;
+	--radius-box: 0rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
+
+@plugin 'daisyui/theme' {
+	name: 'rata-dark';
+	default: false;
+	prefersdark: true;
+	color-scheme: dark;
+	--color-base-100: oklch(17.5% 0 0);
+	--color-base-200: oklch(21% 0 0);
+	--color-base-300: oklch(30% 0 0);
+	--color-base-content: oklch(97% 0 0);
+	--color-primary: oklch(72% 0.13 157);
+	--color-primary-content: oklch(16% 0.025 157);
+	--color-secondary: oklch(78% 0.01 250);
+	--color-secondary-content: oklch(17.5% 0 0);
+	--color-accent: oklch(72% 0.13 157);
+	--color-accent-content: oklch(16% 0.025 157);
+	--color-neutral: oklch(90% 0 0);
+	--color-neutral-content: oklch(17.5% 0 0);
+	--color-info: oklch(72% 0.11 245);
+	--color-info-content: oklch(16% 0.02 245);
+	--color-success: oklch(72% 0.13 157);
+	--color-success-content: oklch(16% 0.025 157);
+	--color-warning: oklch(77% 0.12 75);
+	--color-warning-content: oklch(18% 0.03 75);
+	--color-error: oklch(70% 0.16 27);
+	--color-error-content: oklch(18% 0.03 27);
+	--radius-selector: 0rem;
+	--radius-field: 0rem;
+	--radius-box: 0rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
+
+:root {
+	font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+}
+
+html {
+	background: var(--color-base-100);
+	scroll-behavior: smooth;
+}
+
+body {
+	min-width: 20rem;
+	min-height: 100dvh;
+	background: var(--color-base-100);
+}
+
+button,
+input,
+summary {
+	font: inherit;
+}
+
+::selection {
+	color: var(--color-primary-content);
+	background: var(--color-primary);
+}
+
+.numeric {
+	font-family: 'Geist Mono Variable', ui-monospace, monospace;
+	font-variant-numeric: tabular-nums;
+}
+
+.skip-link {
+	position: fixed;
+	top: 0.75rem;
+	left: 0.75rem;
+	z-index: 20;
+	min-height: 2.75rem;
+	padding: 0.7rem 1rem;
+	color: var(--color-primary-content);
+	background: var(--color-primary);
+	transform: translateY(-200%);
+}
+
+.skip-link:focus {
+	transform: translateY(0);
+}
+
+:where(a, button, input, summary):focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 3px;
+}
+
+.brand-mark {
+	display: grid;
+	grid-template-columns: repeat(3, 0.28rem);
+	align-items: end;
+	gap: 0.18rem;
+	width: 1.2rem;
+	height: 1.2rem;
+}
+
+.brand-mark span {
+	display: block;
+	background: var(--color-primary);
+}
+
+.brand-mark span:nth-child(1) {
+	height: 42%;
+}
+
+.brand-mark span:nth-child(2) {
+	height: 70%;
+}
+
+.brand-mark span:nth-child(3) {
+	height: 100%;
+}
+
+summary::-webkit-details-marker {
+	display: none;
+}
+
+details[open] .details-toggle {
+	transform: rotate(45deg);
+}
+
+.details-toggle {
+	font-size: 1.5rem;
+	transition: transform 160ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	.details-toggle {
+		transition: none;
+	}
+}
+
+@media (forced-colors: active) {
+	:where(a, button, input, summary):focus-visible {
+		outline-color: Highlight;
+	}
+}
