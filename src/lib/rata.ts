@@ -58,6 +58,10 @@ export type StockSaleInput = {
 	sellFeeRate: number;
 };
 
+export type TargetSaleInput = Pick<StockSaleInput, 'currentLots' | 'salePrice' | 'sellFeeRate'> & {
+	targetProceeds: number;
+};
+
 export type StockSaleResult = {
 	soldShares: number;
 	soldCostBasis: number;
@@ -104,6 +108,67 @@ function isValidLotAmount(value: number): boolean {
 	return isFiniteNonNegative(value) && Number.isInteger(value);
 }
 
+function calculateBuyFee(purchaseValue: number, buyFeeRate: number): number {
+	const fee = purchaseValue * buyFeeRate;
+	return buyFeeRate === STOCKBIT_BUY_FEE_RATE ? Math.floor(fee) : fee;
+}
+
+function calculateSellFee(saleValue: number, sellFeeRate: number): number {
+	const fee = saleValue * sellFeeRate;
+	return sellFeeRate === STOCKBIT_SELL_FEE_RATE ? Math.floor(fee) : fee;
+}
+
+export function calculateTargetSaleLots(input: TargetSaleInput): number | undefined {
+	if (
+		!isValidLotAmount(input.currentLots) ||
+		!isFiniteNonNegative(input.targetProceeds) ||
+		!Number.isFinite(input.salePrice) ||
+		input.salePrice <= 0 ||
+		!isFiniteNonNegative(input.sellFeeRate) ||
+		input.sellFeeRate >= 1
+	) {
+		return undefined;
+	}
+
+	const proceeds = (lots: number) => {
+		const saleValue = lots * LOT_SIZE * input.salePrice;
+		return saleValue - calculateSellFee(saleValue, input.sellFeeRate);
+	};
+	let lower = 0;
+	let upper = input.currentLots;
+	while (lower < upper) {
+		const middle = lower + Math.floor((upper - lower) / 2);
+		if (proceeds(middle) >= input.targetProceeds) upper = middle;
+		else lower = middle + 1;
+	}
+	return lower;
+}
+
+export function calculateAffordableLots(
+	budget: number,
+	purchasePrice: number,
+	buyFeeRate: number
+): number | undefined {
+	if (
+		!isFiniteNonNegative(budget) ||
+		!Number.isFinite(purchasePrice) ||
+		purchasePrice <= 0 ||
+		!isFiniteNonNegative(buyFeeRate)
+	) {
+		return undefined;
+	}
+
+	const costPerLot = LOT_SIZE * purchasePrice * (1 + buyFeeRate);
+	const lots = Math.floor(budget / costPerLot);
+	if (!Number.isSafeInteger(lots)) return undefined;
+	const cashRequired = (count: number) => {
+		const purchaseValue = count * LOT_SIZE * purchasePrice;
+		return purchaseValue + calculateBuyFee(purchaseValue, buyFeeRate);
+	};
+	if (cashRequired(lots) > budget) return lots - 1;
+	return Number.isSafeInteger(lots + 1) && cashRequired(lots + 1) <= budget ? lots + 1 : lots;
+}
+
 export function calculateStockPurchase(input: StockPurchaseInput): StockPurchaseResult | undefined {
 	const isValidInput =
 		isValidLotAmount(input.currentLots) &&
@@ -124,7 +189,7 @@ export function calculateStockPurchase(input: StockPurchaseInput): StockPurchase
 	const currentInvestmentValue = currentShares * input.currentAveragePrice;
 	const additionalShares = input.additionalLots * LOT_SIZE;
 	const purchaseValue = additionalShares * input.purchasePrice;
-	const buyFee = purchaseValue * input.buyFeeRate;
+	const buyFee = calculateBuyFee(purchaseValue, input.buyFeeRate);
 	const cashRequired = purchaseValue + buyFee;
 	const finalLots = input.currentLots + input.additionalLots;
 	const finalShares = finalLots * LOT_SIZE;
@@ -171,7 +236,7 @@ export function calculateStockSale(input: StockSaleInput): StockSaleResult | und
 	const soldShares = input.saleLots * LOT_SIZE;
 	const soldCostBasis = soldShares * input.currentAveragePrice;
 	const saleValue = soldShares * input.salePrice;
-	const sellFee = saleValue * input.sellFeeRate;
+	const sellFee = calculateSellFee(saleValue, input.sellFeeRate);
 	const netProceeds = saleValue - sellFee;
 	const realizedProfitLoss = netProceeds - soldCostBasis;
 	const realizedProfitLossPercentage =
@@ -227,7 +292,7 @@ export function calculateTargetAverage(input: TargetAverageInput): TargetAverage
 	const additionalLots = Math.ceil(requiredAdditionalShares / LOT_SIZE);
 	const additionalShares = additionalLots * LOT_SIZE;
 	const purchaseValue = additionalShares * input.purchasePrice;
-	const buyFee = purchaseValue * input.buyFeeRate;
+	const buyFee = calculateBuyFee(purchaseValue, input.buyFeeRate);
 	const cashRequired = purchaseValue + buyFee;
 	const resultingAveragePrice =
 		(currentShares * input.currentAveragePrice + purchaseValue) /

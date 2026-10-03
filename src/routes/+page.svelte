@@ -5,9 +5,11 @@
 	import {
 		BROKERAGE_FIRMS,
 		type BrokerageFirmId,
+		calculateAffordableLots,
 		calculateStockPurchase,
 		calculateStockSale,
-		calculateTargetAverage
+		calculateTargetAverage,
+		calculateTargetSaleLots
 	} from '$lib/rata';
 
 	const seoTitle = 'Kalkulator Harga Rata-rata, Beli & Jual Saham | Rata';
@@ -70,29 +72,50 @@
 	let currentAveragePrice = $state(397);
 	let currentMarketPrice = $state(342);
 	let additionalLots = $state(39);
+	let purchaseInputMode = $state<'lots' | 'budget'>('lots');
+	let purchaseBudget = $state(2_000_000);
 	let purchasePrice = $state(342);
 	let saleLots = $state(39);
+	let saleInputMode = $state<'lots' | 'target'>('lots');
+	let targetProceeds = $state(2_000_000);
 	let salePrice = $state(342);
 	let targetAveragePrice = $state(380);
+	let affordableLots = $derived(
+		calculateAffordableLots(purchaseBudget, purchasePrice, brokerageFirm.buyFeeRate)
+	);
+	let plannedLots = $derived(purchaseInputMode === 'budget' ? affordableLots : additionalLots);
 
 	let result = $derived(
-		calculateStockPurchase({
-			currentLots,
-			currentAveragePrice,
-			currentMarketPrice,
-			additionalLots,
-			purchasePrice,
-			buyFeeRate: brokerageFirm.buyFeeRate
-		})
+		plannedLots === undefined
+			? undefined
+			: calculateStockPurchase({
+					currentLots,
+					currentAveragePrice,
+					currentMarketPrice,
+					additionalLots: plannedLots,
+					purchasePrice,
+					buyFeeRate: brokerageFirm.buyFeeRate
+				})
 	);
-	let saleResult = $derived(
-		calculateStockSale({
+	let targetSaleLots = $derived(
+		calculateTargetSaleLots({
 			currentLots,
-			currentAveragePrice,
-			saleLots,
+			targetProceeds,
 			salePrice,
 			sellFeeRate: brokerageFirm.sellFeeRate
 		})
+	);
+	let plannedSaleLots = $derived(saleInputMode === 'target' ? targetSaleLots : saleLots);
+	let saleResult = $derived(
+		plannedSaleLots === undefined
+			? undefined
+			: calculateStockSale({
+					currentLots,
+					currentAveragePrice,
+					saleLots: plannedSaleLots,
+					salePrice,
+					sellFeeRate: brokerageFirm.sellFeeRate
+				})
 	);
 	let saleLotsInvalid = $derived(
 		!Number.isInteger(saleLots) || saleLots < 0 || saleLots > currentLots
@@ -125,8 +148,12 @@
 		currentAveragePrice = 397;
 		currentMarketPrice = 342;
 		additionalLots = 39;
+		purchaseInputMode = 'lots';
+		purchaseBudget = 2_000_000;
 		purchasePrice = 342;
 		saleLots = 39;
+		saleInputMode = 'lots';
+		targetProceeds = 2_000_000;
 		salePrice = 342;
 		targetAveragePrice = 380;
 	}
@@ -284,18 +311,64 @@
 
 				<div class="grid gap-5 sm:grid-cols-2">
 					{#if calculatorMode === 'buy'}
-						<label class="form-control grid gap-2" for="additional-lots">
-							<span class="label-text font-medium text-base-content">Lot tambahan</span>
-							<input
-								id="additional-lots"
-								class="input-bordered numeric input w-full"
-								type="number"
-								min="0"
-								step="1"
-								inputmode="numeric"
-								bind:value={additionalLots}
-							/>
-						</label>
+						<div class="sm:col-span-2">
+							<label class="form-control grid gap-2" for="purchase-input-mode">
+								<span class="label-text font-medium text-base-content"
+									>Hitung pembelian berdasarkan</span
+								>
+								<select
+									id="purchase-input-mode"
+									class="select-bordered select min-h-11 w-full"
+									bind:value={purchaseInputMode}
+								>
+									<option value="lots">Jumlah lot</option>
+									<option value="budget">Dana tersedia</option>
+								</select>
+							</label>
+						</div>
+						{#if purchaseInputMode === 'lots'}
+							<label class="form-control grid gap-2" for="additional-lots">
+								<span class="label-text font-medium text-base-content">Lot tambahan</span>
+								<input
+									id="additional-lots"
+									class="input-bordered numeric input w-full"
+									type="number"
+									min="0"
+									step="1"
+									inputmode="numeric"
+									bind:value={additionalLots}
+								/>
+							</label>
+						{:else}
+							<label class="form-control grid gap-2" for="purchase-budget">
+								<span class="label-text font-medium text-base-content">Dana tersedia</span>
+								<span
+									class="input-bordered input flex items-center gap-2"
+									class:input-error={affordableLots === undefined}
+								>
+									<span class="text-base-content/65" aria-hidden="true">Rp</span>
+									<input
+										id="purchase-budget"
+										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
+										type="number"
+										min="0"
+										step="1"
+										inputmode="numeric"
+										aria-invalid={affordableLots === undefined}
+										aria-describedby="purchase-budget-help"
+										bind:value={purchaseBudget}
+									/>
+								</span>
+								<span
+									id="purchase-budget-help"
+									class="text-xs text-base-content/65"
+									class:text-error={affordableLots === undefined}
+									>{affordableLots === undefined
+										? 'Masukkan dana tersedia nol atau lebih.'
+										: 'Maksimum lot utuh, termasuk fee beli.'}</span
+								>
+							</label>
+						{/if}
 
 						<label class="form-control grid gap-2" for="purchase-price">
 							<span class="label-text font-medium text-base-content">Harga beli</span>
@@ -313,31 +386,77 @@
 							</span>
 						</label>
 					{:else}
-						<label class="form-control grid gap-2" for="sale-lots">
-							<span class="label-text font-medium text-base-content">Lot dijual</span>
-							<input
-								id="sale-lots"
-								class="input-bordered numeric input w-full"
-								class:input-error={saleLotsInvalid}
-								type="number"
-								min="0"
-								max={currentLots}
-								step="1"
-								inputmode="numeric"
-								aria-invalid={saleLotsInvalid}
-								aria-describedby="sale-lots-help"
-								bind:value={saleLots}
-							/>
-							<span
-								id="sale-lots-help"
-								class:text-error={saleLotsInvalid}
-								class="text-xs text-base-content/65"
-							>
-								{saleLotsInvalid
-									? `Masukkan lot bulat antara 0 dan ${Math.max(currentLots, 0)}.`
-									: `Maksimal ${currentLots} lot.`}
-							</span>
-						</label>
+						<div class="sm:col-span-2">
+							<label class="form-control grid gap-2" for="sale-input-mode">
+								<span class="label-text font-medium text-base-content"
+									>Hitung penjualan berdasarkan</span
+								>
+								<select
+									id="sale-input-mode"
+									class="select-bordered select min-h-11 w-full"
+									bind:value={saleInputMode}
+								>
+									<option value="lots">Jumlah lot</option>
+									<option value="target">Target dana diterima</option>
+								</select>
+							</label>
+						</div>
+						{#if saleInputMode === 'lots'}
+							<label class="form-control grid gap-2" for="sale-lots">
+								<span class="label-text font-medium text-base-content">Lot dijual</span>
+								<input
+									id="sale-lots"
+									class="input-bordered numeric input w-full"
+									class:input-error={saleLotsInvalid}
+									type="number"
+									min="0"
+									max={currentLots}
+									step="1"
+									inputmode="numeric"
+									aria-invalid={saleLotsInvalid}
+									aria-describedby="sale-lots-help"
+									bind:value={saleLots}
+								/>
+								<span
+									id="sale-lots-help"
+									class:text-error={saleLotsInvalid}
+									class="text-xs text-base-content/65"
+								>
+									{saleLotsInvalid
+										? `Masukkan lot bulat antara 0 dan ${Math.max(currentLots, 0)}.`
+										: `Maksimal ${currentLots} lot.`}
+								</span>
+							</label>
+						{:else}
+							<label class="form-control grid gap-2" for="target-proceeds">
+								<span class="label-text font-medium text-base-content">Target dana bersih</span>
+								<span
+									class="input-bordered input flex items-center gap-2"
+									class:input-error={targetSaleLots === undefined}
+								>
+									<span class="text-base-content/65" aria-hidden="true">Rp</span>
+									<input
+										id="target-proceeds"
+										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
+										type="number"
+										min="0"
+										step="1"
+										inputmode="numeric"
+										aria-invalid={targetSaleLots === undefined}
+										aria-describedby="target-proceeds-help"
+										bind:value={targetProceeds}
+									/>
+								</span>
+								<span
+									id="target-proceeds-help"
+									class="text-xs text-base-content/65"
+									class:text-error={targetSaleLots === undefined}
+									>{targetSaleLots === undefined
+										? 'Masukkan target dana nol atau lebih.'
+										: 'Jumlah yang ingin diterima setelah fee jual; hasilnya mengikuti lot utuh.'}</span
+								>
+							</label>
+						{/if}
 
 						<label class="form-control grid content-start gap-2" for="sale-price">
 							<span class="label-text font-medium text-base-content">Harga jual</span>
@@ -423,13 +542,23 @@
 							</p>
 						{:else}
 							<p class="mt-3 text-base font-medium text-error" role="alert">
-								Periksa kembali input. Lot harus berupa bilangan bulat dan harga harus lebih dari
-								nol.
+								Periksa kembali input. Lot harus berupa bilangan bulat, harga lebih dari nol, dan
+								dana tersedia tidak boleh negatif.
 							</p>
 						{/if}
 					</div>
 
 					{#if result}
+						{#if purchaseInputMode === 'budget'}
+							<p class="mb-5 text-sm text-base-content/70">
+								Dana {formatRupiah(purchaseBudget)} cukup untuk
+								<strong class="numeric font-medium text-base-content"
+									>{result.additionalShares / 100} lot tambahan</strong
+								>
+								termasuk fee beli.{#if result.additionalShares === 0}
+									Dana belum cukup untuk membeli 1 lot.{/if}
+							</p>
+						{/if}
 						<div
 							class="grid border border-base-300 sm:grid-cols-2"
 							aria-live="polite"
@@ -490,6 +619,14 @@
 										{formatRupiah(result.cashRequired)}
 									</dd>
 								</div>
+								{#if purchaseInputMode === 'budget'}
+									<div class="flex items-center justify-between gap-4">
+										<dt class="text-base-content/60">Sisa dana</dt>
+										<dd class="numeric text-base-content">
+											{formatRupiah(purchaseBudget - result.cashRequired)}
+										</dd>
+									</div>
+								{/if}
 							</dl>
 						</div>
 
@@ -523,14 +660,35 @@
 							<p class="mt-3 text-base font-medium text-error" role="alert">
 								{currentLots <= 0
 									? 'Masukkan jumlah lot saat ini lebih dari nol.'
-									: saleLotsInvalid
-										? `Masukkan lot yang dijual antara 0 dan ${Math.max(currentLots, 0)}.`
-										: 'Periksa harga rata-rata dan harga jual. Keduanya harus lebih dari nol.'}
+									: saleInputMode === 'target' && targetSaleLots === undefined
+										? 'Periksa target dana dan harga jual. Masukkan nilai yang valid.'
+										: saleInputMode === 'lots' && saleLotsInvalid
+											? `Masukkan lot yang dijual antara 0 dan ${Math.max(currentLots, 0)}.`
+											: 'Periksa harga rata-rata dan harga jual. Keduanya harus lebih dari nol.'}
 							</p>
 						{/if}
 					</div>
 
 					{#if saleResult}
+						{#if saleInputMode === 'target'}
+							<p class="mb-5 text-sm leading-6 text-base-content/70" role="status">
+								{#if saleResult.netProceeds < targetProceeds}
+									Target belum tercapai. Menjual seluruh {currentLots} lot menghasilkan dana bersih {formatRupiah(
+										saleResult.netProceeds
+									)}, masih kurang {formatRupiah(targetProceeds - saleResult.netProceeds)}.
+								{:else}
+									Jual <strong class="numeric font-medium text-base-content"
+										>{plannedSaleLots} lot</strong
+									>
+									untuk mencapai target {formatRupiah(
+										targetProceeds
+									)}.{' '}{#if saleResult.netProceeds > targetProceeds}
+										Selisih lebih {formatRupiah(saleResult.netProceeds - targetProceeds)} karena penjualan
+										harus dalam lot utuh.{:else}
+										Hasilnya tepat sesuai target.{/if}
+								{/if}
+							</p>
+						{/if}
 						<div
 							class="grid border border-base-300 sm:grid-cols-2"
 							aria-live="polite"
