@@ -44,6 +44,7 @@ Use Bun exclusively and treat `bun.lock` as authoritative.
   behavior.
 
 <!-- graft:start -->
+
 ## Graft — repo context graph
 
 This repo is indexed in `graft/`: small linked markdown nodes that explain each

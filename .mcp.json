@@ -1,10 +1,8 @@
 {
-  "mcpServers": {
-    "graft": {
-      "command": "graft",
-      "args": [
-        "mcp"
-      ]
-    }
-  }
+	"mcpServers": {
+		"graft": {
+			"command": "graft",
+			"args": ["mcp"]
+		}
+	}
 }

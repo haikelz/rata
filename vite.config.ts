@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import adapter from '@sveltejs/adapter-cloudflare';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
 	plugins: [
@@ -12,7 +13,40 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
-			adapter: adapter()
+			adapter: adapter(),
+			serviceWorker: { register: false }
+		}),
+		SvelteKitPWA({
+			strategies: 'generateSW',
+			filename: 'service-worker.js',
+			registerType: 'prompt',
+			injectRegister: 'script',
+			manifestFilename: 'manifest.webmanifest',
+			manifest: {
+				id: '/',
+				name: 'Rata — Kalkulator Saham',
+				short_name: 'Rata',
+				description:
+					'Kalkulator beli, jual, dan harga rata-rata saham Indonesia. Bisa digunakan offline.',
+				lang: 'id',
+				start_url: '/',
+				scope: '/',
+				display: 'standalone',
+				background_color: '#f5f5f5',
+				theme_color: '#f5f5f5',
+				icons: [
+					{ src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+					{ src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+				]
+			},
+			workbox: {
+				globPatterns: [
+					'client/**/*.{js,css,ico,png,svg,webp,webmanifest,woff2}',
+					'prerendered/**/*.{html,json}'
+				],
+				navigateFallback: '/',
+				cleanupOutdatedCaches: true
+			}
 		})
 	],
 	test: {

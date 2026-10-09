@@ -1,12 +1,9 @@
 {
-  "mcp": {
-    "graft": {
-      "type": "local",
-      "command": [
-        "graft",
-        "mcp"
-      ],
-      "enabled": true
-    }
-  }
+	"mcp": {
+		"graft": {
+			"type": "local",
+			"command": ["graft", "mcp"],
+			"enabled": true
+		}
+	}
 }
