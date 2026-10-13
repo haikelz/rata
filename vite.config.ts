@@ -20,7 +20,7 @@ export default defineConfig({
 			strategies: 'generateSW',
 			filename: 'service-worker.js',
 			registerType: 'prompt',
-			injectRegister: 'script',
+			injectRegister: false,
 			manifestFilename: 'manifest.webmanifest',
 			manifest: {
 				id: '/',
@@ -40,6 +40,7 @@ export default defineConfig({
 				]
 			},
 			workbox: {
+				importScripts: ['/pwa-cache-cleanup.js'],
 				globPatterns: [
 					'client/**/*.{js,css,ico,png,svg,webp,webmanifest,woff2}',
 					'prerendered/**/*.{html,json}'
