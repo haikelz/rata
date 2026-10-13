@@ -49,11 +49,12 @@
 	const rupiahFormatter = new Intl.NumberFormat('id-ID', {
 		style: 'currency',
 		currency: 'IDR',
-		maximumFractionDigits: 0
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 4
 	});
 	const priceFormatter = new Intl.NumberFormat('id-ID', {
 		minimumFractionDigits: 0,
-		maximumFractionDigits: 2
+		maximumFractionDigits: 4
 	});
 	const percentageFormatter = new Intl.NumberFormat('id-ID', {
 		minimumFractionDigits: 2,
@@ -117,10 +118,6 @@
 					sellFeeRate: brokerageFirm.sellFeeRate
 				})
 	);
-	let saleLotsInvalid = $derived(
-		!Number.isInteger(saleLots) || saleLots < 0 || saleLots > currentLots
-	);
-	let salePriceInvalid = $derived(!Number.isFinite(salePrice) || salePrice <= 0);
 	let targetResult = $derived(
 		calculateTargetAverage({
 			currentLots,
@@ -131,12 +128,75 @@
 		})
 	);
 
+	function inputError(value: number, minimum = 0, lots = false): string {
+		if (value === undefined || !Number.isFinite(value))
+			return 'Masukkan angka yang valid; kolom ini wajib diisi.';
+		if (value < minimum || (minimum > 0 && value === 0))
+			return minimum > 0 ? 'Masukkan harga lebih dari nol.' : 'Nilai tidak boleh negatif.';
+		if (lots && !Number.isInteger(value)) return 'Lot harus berupa bilangan bulat.';
+		if (value > Number.MAX_SAFE_INTEGER || (lots && !Number.isSafeInteger(value * 100)))
+			return 'Nilai terlalu besar untuk dihitung dengan aman. Kurangi nilainya.';
+		return '';
+	}
+	const unsafeMessage =
+		'Hasil perhitungan terlalu besar untuk dihitung dengan aman. Kurangi lot atau harga.';
+	let errors = $derived({
+		'current-lots':
+			inputError(currentLots) ||
+			inputError(currentLots, 0, true) ||
+			(calculatorMode === 'sell' && currentLots === 0
+				? 'Masukkan jumlah lot saat ini lebih dari nol.'
+				: ''),
+		'current-average':
+			inputError(currentAveragePrice, currentLots > 0 ? Number.MIN_VALUE : 0) ||
+			(currentLots * 100 * currentAveragePrice > Number.MAX_SAFE_INTEGER ? unsafeMessage : ''),
+		'market-price':
+			inputError(currentMarketPrice, Number.MIN_VALUE) ||
+			(result === undefined &&
+			!inputError(currentLots, 0, true) &&
+			!inputError(currentAveragePrice, currentLots > 0 ? Number.MIN_VALUE : 0) &&
+			plannedLots !== undefined &&
+			!inputError(plannedLots, 0, true) &&
+			!inputError(purchasePrice, Number.MIN_VALUE)
+				? unsafeMessage
+				: ''),
+		'additional-lots': inputError(additionalLots, 0, true),
+		'purchase-budget':
+			inputError(purchaseBudget) ||
+			(affordableLots === undefined && !inputError(purchasePrice, Number.MIN_VALUE)
+				? unsafeMessage
+				: ''),
+		'purchase-price': inputError(purchasePrice, Number.MIN_VALUE),
+		'sale-lots':
+			inputError(saleLots, 0, true) ||
+			(saleLots > currentLots ? 'Lot dijual tidak boleh melebihi posisi saat ini.' : ''),
+		'target-proceeds': inputError(targetProceeds),
+		'sale-price':
+			inputError(salePrice, Number.MIN_VALUE) ||
+			((saleInputMode === 'target' ? currentLots : saleLots) * 100 * salePrice >
+				Number.MAX_SAFE_INTEGER ||
+			(saleResult === undefined &&
+				currentLots > 0 &&
+				!inputError(currentLots, 0, true) &&
+				!inputError(currentAveragePrice, Number.MIN_VALUE) &&
+				plannedSaleLots !== undefined &&
+				!inputError(plannedSaleLots, 0, true) &&
+				plannedSaleLots <= currentLots)
+				? unsafeMessage
+				: ''),
+		'target-average':
+			inputError(targetAveragePrice, Number.MIN_VALUE) ||
+			(targetResult.status === 'unreachable' && targetResult.reason === 'invalid-input'
+				? 'Periksa posisi dan harga beli; hasil target harus berada dalam batas perhitungan aman.'
+				: '')
+	});
+
 	function formatRupiah(value: number): string {
 		return rupiahFormatter.format(value);
 	}
 
 	function formatPrice(value: number): string {
-		return `Rp${priceFormatter.format(value)}`;
+		return formatRupiah(value);
 	}
 
 	function formatFeeRate(rate: number): string {
@@ -186,6 +246,10 @@
 
 	<svelte:element this={"script"} type="application/ld+json">{structuredDataJson}</svelte:element>
 </svelte:head>
+
+{#snippet fieldError(id: keyof typeof errors)}
+	<span id={`${id}-validation`} class="text-xs text-error" aria-live="polite">{errors[id]}</span>
+{/snippet}
 
 <a class="skip-link" href="#main-content">Lewati ke kalkulator</a>
 
@@ -252,14 +316,16 @@
 					<span class="label-text font-medium text-base-content">Jumlah lot</span>
 					<input
 						id="current-lots"
+						aria-invalid={!!errors['current-lots']}
 						class="input-bordered numeric input w-full"
 						type="number"
 						min="0"
 						step="1"
 						inputmode="numeric"
-						aria-describedby="current-lots-help"
+						aria-describedby="current-lots-help current-lots-validation"
 						bind:value={currentLots}
 					/>
+					{@render fieldError('current-lots')}
 					<span id="current-lots-help" class="text-xs text-base-content/65"
 						>1 lot = 100 lembar saham</span
 					>
@@ -272,6 +338,8 @@
 							<span class="text-base-content/65" aria-hidden="true">Rp</span>
 							<input
 								id="current-average"
+								aria-invalid={!!errors['current-average']}
+								aria-describedby="current-average-validation"
 								class="numeric min-w-0 grow border-0 bg-transparent outline-none"
 								type="number"
 								min="0"
@@ -280,6 +348,7 @@
 								bind:value={currentAveragePrice}
 							/>
 						</span>
+						{@render fieldError('current-average')}
 					</label>
 
 					{#if calculatorMode === 'buy'}
@@ -289,6 +358,8 @@
 								<span class="text-base-content/65" aria-hidden="true">Rp</span>
 								<input
 									id="market-price"
+									aria-invalid={!!errors['market-price']}
+									aria-describedby="market-price-validation"
 									class="numeric min-w-0 grow border-0 bg-transparent outline-none"
 									type="number"
 									min="0.01"
@@ -297,6 +368,7 @@
 									bind:value={currentMarketPrice}
 								/>
 							</span>
+							{@render fieldError('market-price')}
 						</label>
 					{/if}
 				</div>
@@ -331,6 +403,8 @@
 								<span class="label-text font-medium text-base-content">Lot tambahan</span>
 								<input
 									id="additional-lots"
+									aria-invalid={!!errors['additional-lots']}
+									aria-describedby="additional-lots-validation"
 									class="input-bordered numeric input w-full"
 									type="number"
 									min="0"
@@ -338,13 +412,14 @@
 									inputmode="numeric"
 									bind:value={additionalLots}
 								/>
+								{@render fieldError('additional-lots')}
 							</label>
 						{:else}
 							<label class="form-control grid gap-2" for="purchase-budget">
 								<span class="label-text font-medium text-base-content">Dana tersedia</span>
 								<span
 									class="input-bordered input flex items-center gap-2"
-									class:input-error={affordableLots === undefined}
+									class:input-error={!!errors['purchase-budget']}
 								>
 									<span class="text-base-content/65" aria-hidden="true">Rp</span>
 									<input
@@ -354,18 +429,14 @@
 										min="0"
 										step="1"
 										inputmode="numeric"
-										aria-invalid={affordableLots === undefined}
-										aria-describedby="purchase-budget-help"
+										aria-invalid={!!errors['purchase-budget']}
+										aria-describedby="purchase-budget-help purchase-budget-validation"
 										bind:value={purchaseBudget}
 									/>
 								</span>
-								<span
-									id="purchase-budget-help"
-									class="text-xs text-base-content/65"
-									class:text-error={affordableLots === undefined}
-									>{affordableLots === undefined
-										? 'Masukkan dana tersedia nol atau lebih.'
-										: 'Maksimum lot utuh, termasuk fee beli.'}</span
+								{@render fieldError('purchase-budget')}
+								<span id="purchase-budget-help" class="text-xs text-base-content/65"
+									>Maksimum lot utuh, termasuk fee beli.</span
 								>
 							</label>
 						{/if}
@@ -376,6 +447,8 @@
 								<span class="text-base-content/65" aria-hidden="true">Rp</span>
 								<input
 									id="purchase-price"
+									aria-invalid={!!errors['purchase-price']}
+									aria-describedby="purchase-price-validation"
 									class="numeric min-w-0 grow border-0 bg-transparent outline-none"
 									type="number"
 									min="0.01"
@@ -384,6 +457,7 @@
 									bind:value={purchasePrice}
 								/>
 							</span>
+							{@render fieldError('purchase-price')}
 						</label>
 					{:else}
 						<div class="sm:col-span-2">
@@ -397,7 +471,7 @@
 									bind:value={saleInputMode}
 								>
 									<option value="lots">Jumlah lot</option>
-									<option value="target">Target dana diterima</option>
+									<option value="target">Target minimum dana bersih</option>
 								</select>
 							</label>
 						</div>
@@ -407,32 +481,29 @@
 								<input
 									id="sale-lots"
 									class="input-bordered numeric input w-full"
-									class:input-error={saleLotsInvalid}
+									class:input-error={!!errors['sale-lots']}
 									type="number"
 									min="0"
 									max={currentLots}
 									step="1"
 									inputmode="numeric"
-									aria-invalid={saleLotsInvalid}
-									aria-describedby="sale-lots-help"
+									aria-invalid={!!errors['sale-lots']}
+									aria-describedby="sale-lots-help sale-lots-validation"
 									bind:value={saleLots}
 								/>
-								<span
-									id="sale-lots-help"
-									class:text-error={saleLotsInvalid}
-									class="text-xs text-base-content/65"
-								>
-									{saleLotsInvalid
-										? `Masukkan lot bulat antara 0 dan ${Math.max(currentLots, 0)}.`
-										: `Maksimal ${currentLots} lot.`}
+								{@render fieldError('sale-lots')}
+								<span id="sale-lots-help" class="text-xs text-base-content/65">
+									Lot utuh, tidak melebihi posisi saat ini. Nol berarti tidak menjual.
 								</span>
 							</label>
 						{:else}
 							<label class="form-control grid gap-2" for="target-proceeds">
-								<span class="label-text font-medium text-base-content">Target dana bersih</span>
+								<span class="label-text font-medium text-base-content"
+									>Target minimum dana bersih</span
+								>
 								<span
 									class="input-bordered input flex items-center gap-2"
-									class:input-error={targetSaleLots === undefined}
+									class:input-error={!!errors['target-proceeds']}
 								>
 									<span class="text-base-content/65" aria-hidden="true">Rp</span>
 									<input
@@ -442,18 +513,15 @@
 										min="0"
 										step="1"
 										inputmode="numeric"
-										aria-invalid={targetSaleLots === undefined}
-										aria-describedby="target-proceeds-help"
+										aria-invalid={!!errors['target-proceeds']}
+										aria-describedby="target-proceeds-help target-proceeds-validation"
 										bind:value={targetProceeds}
 									/>
 								</span>
-								<span
-									id="target-proceeds-help"
-									class="text-xs text-base-content/65"
-									class:text-error={targetSaleLots === undefined}
-									>{targetSaleLots === undefined
-										? 'Masukkan target dana nol atau lebih.'
-										: 'Jumlah yang ingin diterima setelah fee jual; hasilnya mengikuti lot utuh.'}</span
+								{@render fieldError('target-proceeds')}
+								<span id="target-proceeds-help" class="text-xs text-base-content/65"
+									>Minimum dana setelah fee jual. Lot utuh dapat menghasilkan dana lebih dari
+									target.</span
 								>
 							</label>
 						{/if}
@@ -462,7 +530,7 @@
 							<span class="label-text font-medium text-base-content">Harga jual</span>
 							<span
 								class="input-bordered input flex items-center gap-2"
-								class:input-error={salePriceInvalid}
+								class:input-error={!!errors['sale-price']}
 							>
 								<span class="text-base-content/65" aria-hidden="true">Rp</span>
 								<input
@@ -472,16 +540,12 @@
 									min="0.01"
 									step="0.01"
 									inputmode="decimal"
-									aria-invalid={salePriceInvalid}
-									aria-describedby={salePriceInvalid ? 'sale-price-error' : undefined}
+									aria-invalid={!!errors['sale-price']}
+									aria-describedby="sale-price-validation"
 									bind:value={salePrice}
 								/>
 							</span>
-							{#if salePriceInvalid}
-								<span id="sale-price-error" class="text-xs text-error"
-									>Masukkan harga jual lebih dari nol.</span
-								>
-							{/if}
+							{@render fieldError('sale-price')}
 						</label>
 					{/if}
 				</div>
@@ -522,6 +586,10 @@
 
 		<div class="border-b border-base-300 bg-base-200/35 p-4 sm:p-8 lg:p-10">
 			<div class="lg:sticky lg:top-26">
+				<p class="mb-4 text-xs leading-5 text-base-content/65">
+					Estimasi uang ditampilkan hingga 4 desimal, bukan pembulatan broker. Fee pecahan Ajaib
+					dipertahankan dalam perhitungan.
+				</p>
 				{#if calculatorMode === 'buy'}
 					<div class="mb-8">
 						<p class="text-sm font-medium text-base-content/65">Estimasi setelah beli</p>
@@ -542,8 +610,8 @@
 							</p>
 						{:else}
 							<p class="mt-3 text-base font-medium text-error" role="alert">
-								Periksa kembali input. Lot harus berupa bilangan bulat, harga lebih dari nol, dan
-								dana tersedia tidak boleh negatif.
+								Periksa pesan di bawah kolom input. Gunakan nilai valid dalam batas perhitungan
+								aman.
 							</p>
 						{/if}
 					</div>
@@ -637,10 +705,14 @@
 					{/if}
 				{:else}
 					<div class="mb-8">
-						<p class="text-sm font-medium text-base-content/65">Estimasi setelah jual</p>
+						<p class="text-sm font-medium text-base-content/65">
+							{saleInputMode === 'target' && saleResult && saleResult.netProceeds < targetProceeds
+								? 'Estimasi dana bersih maksimum — target belum tercapai'
+								: 'Estimasi setelah jual'}
+						</p>
 						{#if saleResult}
 							<p
-								class="numeric mt-3 text-4xl font-medium tracking-[-0.04em] text-base-content sm:text-5xl"
+								class="numeric mt-3 text-2xl font-medium tracking-[-0.04em] break-all text-base-content sm:text-4xl"
 							>
 								{formatRupiah(saleResult.netProceeds)}
 							</p>
@@ -658,13 +730,8 @@
 							{/if}
 						{:else}
 							<p class="mt-3 text-base font-medium text-error" role="alert">
-								{currentLots <= 0
-									? 'Masukkan jumlah lot saat ini lebih dari nol.'
-									: saleInputMode === 'target' && targetSaleLots === undefined
-										? 'Periksa target dana dan harga jual. Masukkan nilai yang valid.'
-										: saleInputMode === 'lots' && saleLotsInvalid
-											? `Masukkan lot yang dijual antara 0 dan ${Math.max(currentLots, 0)}.`
-											: 'Periksa harga rata-rata dan harga jual. Keduanya harus lebih dari nol.'}
+								Periksa pesan di bawah kolom input. Gunakan nilai valid dalam batas perhitungan
+								aman.
 							</p>
 						{/if}
 					</div>
@@ -673,16 +740,16 @@
 						{#if saleInputMode === 'target'}
 							<p class="mb-5 text-sm leading-6 text-base-content/70" role="status">
 								{#if saleResult.netProceeds < targetProceeds}
-									Target belum tercapai. Menjual seluruh {currentLots} lot menghasilkan dana bersih {formatRupiah(
-										saleResult.netProceeds
-									)}, masih kurang {formatRupiah(targetProceeds - saleResult.netProceeds)}.
+									Target minimum belum tercapai. Menjual seluruh {currentLots} lot menghasilkan dana bersih
+									maksimum {formatRupiah(saleResult.netProceeds)}, masih kurang {formatRupiah(
+										targetProceeds - saleResult.netProceeds
+									)}.
 								{:else}
 									Jual <strong class="numeric font-medium text-base-content"
 										>{plannedSaleLots} lot</strong
 									>
-									untuk mencapai target {formatRupiah(
-										targetProceeds
-									)}.{' '}{#if saleResult.netProceeds > targetProceeds}
+									untuk mencapai target minimum dana bersih {formatRupiah(targetProceeds)}.
+									{#if saleResult.netProceeds > targetProceeds}
 										Selisih lebih {formatRupiah(saleResult.netProceeds - targetProceeds)} karena penjualan
 										harus dalam lot utuh.{:else}
 										Hasilnya tepat sesuai target.{/if}
@@ -796,10 +863,12 @@
 									min="0.01"
 									step="0.01"
 									inputmode="decimal"
-									aria-describedby="target-average-help"
+									aria-invalid={!!errors['target-average']}
+									aria-describedby="target-average-help target-average-validation"
 									bind:value={targetAveragePrice}
 								/>
 							</span>
+							{@render fieldError('target-average')}
 							<span id="target-average-help" class="text-xs leading-5 text-base-content/65">
 								Harus berada di antara harga beli rencana dan rata-rata saat ini.
 							</span>
@@ -836,7 +905,10 @@
 								<span class="numeric">{formatPrice(purchasePrice)}</span>.
 							</p>
 						{:else}
-							<p class="font-medium text-error">Lengkapi posisi saat ini terlebih dahulu.</p>
+							<p class="font-medium text-error">
+								Periksa posisi, harga beli, dan rata-rata target. Gunakan nilai valid dalam batas
+								perhitungan aman.
+							</p>
 						{/if}
 					</div>
 				</div>
@@ -887,7 +959,9 @@
 			</p>
 			<p class="mt-4 text-xs leading-5 text-base-content/60">
 				Hasil merupakan estimasi untuk perencanaan, bukan rekomendasi investasi. Cocokkan kembali
-				nilai order dan biaya yang berlaku dengan broker sebelum bertransaksi.
+				nilai order dan biaya yang berlaku dengan broker sebelum bertransaksi. Nilai uang
+				ditampilkan hingga 4 angka desimal; pembulatan tampilan bukan kebijakan broker. Estimasi
+				Ajaib mempertahankan fee pecahan tanpa mengasumsikan pembulatan broker.
 			</p>
 		</article>
 	</section>

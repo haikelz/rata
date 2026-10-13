@@ -101,11 +101,19 @@ export type TargetAverageResult =
 	  };
 
 function isFiniteNonNegative(value: number): boolean {
-	return Number.isFinite(value) && value >= 0;
+	return Number.isFinite(value) && value >= 0 && value <= Number.MAX_SAFE_INTEGER;
 }
 
 function isValidLotAmount(value: number): boolean {
-	return isFiniteNonNegative(value) && Number.isInteger(value);
+	return (
+		isFiniteNonNegative(value) && Number.isInteger(value) && Number.isSafeInteger(value * LOT_SIZE)
+	);
+}
+
+function isSafeCalculation(...values: number[]): boolean {
+	return values.every(
+		(value) => Number.isFinite(value) && Math.abs(value) <= Number.MAX_SAFE_INTEGER
+	);
 }
 
 function calculateBuyFee(purchaseValue: number, buyFeeRate: number): number {
@@ -134,6 +142,14 @@ export function calculateTargetSaleLots(input: TargetSaleInput): number | undefi
 		const saleValue = lots * LOT_SIZE * input.salePrice;
 		return saleValue - calculateSellFee(saleValue, input.sellFeeRate);
 	};
+	if (
+		!isSafeCalculation(
+			input.salePrice,
+			input.currentLots * LOT_SIZE * input.salePrice,
+			proceeds(input.currentLots)
+		)
+	)
+		return undefined;
 	let lower = 0;
 	let upper = input.currentLots;
 	while (lower < upper) {
@@ -159,14 +175,15 @@ export function calculateAffordableLots(
 	}
 
 	const costPerLot = LOT_SIZE * purchasePrice * (1 + buyFeeRate);
+	if (!isSafeCalculation(costPerLot) || costPerLot <= 0) return undefined;
 	const lots = Math.floor(budget / costPerLot);
-	if (!Number.isSafeInteger(lots)) return undefined;
+	if (!isValidLotAmount(lots)) return undefined;
 	const cashRequired = (count: number) => {
 		const purchaseValue = count * LOT_SIZE * purchasePrice;
 		return purchaseValue + calculateBuyFee(purchaseValue, buyFeeRate);
 	};
 	if (cashRequired(lots) > budget) return lots - 1;
-	return Number.isSafeInteger(lots + 1) && cashRequired(lots + 1) <= budget ? lots + 1 : lots;
+	return isValidLotAmount(lots + 1) && cashRequired(lots + 1) <= budget ? lots + 1 : lots;
 }
 
 export function calculateStockPurchase(input: StockPurchaseInput): StockPurchaseResult | undefined {
@@ -199,6 +216,24 @@ export function calculateStockPurchase(input: StockPurchaseInput): StockPurchase
 	const unrealizedProfitLoss = marketValue - finalInvestmentValue;
 	const unrealizedProfitLossPercentage =
 		finalInvestmentValue === 0 ? 0 : (unrealizedProfitLoss / finalInvestmentValue) * 100;
+	if (
+		!isSafeCalculation(
+			input.currentMarketPrice,
+			input.purchasePrice,
+			currentShares,
+			currentInvestmentValue,
+			additionalShares,
+			purchaseValue,
+			buyFee,
+			cashRequired,
+			finalShares,
+			finalInvestmentValue,
+			marketValue,
+			unrealizedProfitLoss,
+			unrealizedProfitLossPercentage
+		)
+	)
+		return undefined;
 
 	return {
 		currentShares,
@@ -245,6 +280,23 @@ export function calculateStockSale(input: StockSaleInput): StockSaleResult | und
 	const remainingShares = remainingLots * LOT_SIZE;
 	const remainingAveragePrice = remainingShares === 0 ? 0 : input.currentAveragePrice;
 	const remainingInvestmentValue = remainingShares * remainingAveragePrice;
+	if (
+		!isSafeCalculation(
+			input.currentAveragePrice,
+			input.salePrice,
+			input.currentLots * LOT_SIZE,
+			input.currentLots * LOT_SIZE * input.currentAveragePrice,
+			soldShares,
+			soldCostBasis,
+			saleValue,
+			sellFee,
+			netProceeds,
+			realizedProfitLoss,
+			realizedProfitLossPercentage,
+			remainingInvestmentValue
+		)
+	)
+		return undefined;
 
 	return {
 		soldShares,
@@ -276,6 +328,15 @@ export function calculateTargetAverage(input: TargetAverageInput): TargetAverage
 	if (!isValidInput) {
 		return { status: 'unreachable', reason: 'invalid-input' };
 	}
+	if (
+		!isSafeCalculation(
+			input.currentAveragePrice,
+			input.purchasePrice,
+			input.targetAveragePrice,
+			input.currentLots * LOT_SIZE * input.currentAveragePrice
+		)
+	)
+		return { status: 'unreachable', reason: 'invalid-input' };
 
 	if (input.targetAveragePrice >= input.currentAveragePrice) {
 		return { status: 'already-reached' };
@@ -297,6 +358,18 @@ export function calculateTargetAverage(input: TargetAverageInput): TargetAverage
 	const resultingAveragePrice =
 		(currentShares * input.currentAveragePrice + purchaseValue) /
 		(currentShares + additionalShares);
+	if (
+		!isValidLotAmount(additionalLots) ||
+		!isSafeCalculation(
+			currentShares + additionalShares,
+			purchaseValue,
+			buyFee,
+			cashRequired,
+			currentShares * input.currentAveragePrice + purchaseValue,
+			resultingAveragePrice
+		)
+	)
+		return { status: 'unreachable', reason: 'invalid-input' };
 
 	return {
 		status: 'achievable',

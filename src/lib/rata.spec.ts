@@ -13,6 +13,103 @@ import {
 	calculateTargetSaleLots
 } from './rata';
 
+describe('calculation safety and zero transactions', () => {
+	const purchase = {
+		currentLots: 10,
+		currentAveragePrice: 500,
+		currentMarketPrice: 450,
+		additionalLots: 1,
+		purchasePrice: 450,
+		buyFeeRate: STOCKBIT_BUY_FEE_RATE
+	};
+	const sale = {
+		currentLots: 10,
+		currentAveragePrice: 500,
+		saleLots: 1,
+		salePrice: 450,
+		sellFeeRate: STOCKBIT_SELL_FEE_RATE
+	};
+	const target = {
+		currentLots: 10,
+		currentAveragePrice: 500,
+		purchasePrice: 450,
+		targetAveragePrice: 480,
+		buyFeeRate: STOCKBIT_BUY_FEE_RATE
+	};
+
+	it.each([NaN, Infinity, -1, 0.01, 1.5, Number.MAX_SAFE_INTEGER])(
+		'rejects invalid or unsafe lot amount %s',
+		(lots) => {
+			expect(calculateStockPurchase({ ...purchase, currentLots: lots })).toBeUndefined();
+			expect(calculateStockPurchase({ ...purchase, additionalLots: lots })).toBeUndefined();
+			expect(calculateStockSale({ ...sale, currentLots: lots })).toBeUndefined();
+			expect(calculateStockSale({ ...sale, saleLots: lots })).toBeUndefined();
+			expect(
+				calculateTargetSaleLots({ ...sale, currentLots: lots, targetProceeds: 1 })
+			).toBeUndefined();
+			expect(calculateTargetAverage({ ...target, currentLots: lots })).toEqual({
+				status: 'unreachable',
+				reason: 'invalid-input'
+			});
+		}
+	);
+
+	it.each([NaN, Infinity, -1, Number.MAX_SAFE_INTEGER * 2])(
+		'rejects invalid monetary input %s',
+		(value) => {
+			for (const field of ['currentAveragePrice', 'currentMarketPrice', 'purchasePrice'] as const)
+				expect(calculateStockPurchase({ ...purchase, [field]: value })).toBeUndefined();
+			for (const field of ['currentAveragePrice', 'salePrice'] as const)
+				expect(calculateStockSale({ ...sale, [field]: value })).toBeUndefined();
+			for (const field of ['currentAveragePrice', 'purchasePrice', 'targetAveragePrice'] as const)
+				expect(calculateTargetAverage({ ...target, [field]: value })).toEqual({
+					status: 'unreachable',
+					reason: 'invalid-input'
+				});
+			expect(calculateAffordableLots(value, 450, STOCKBIT_BUY_FEE_RATE)).toBeUndefined();
+			expect(calculateTargetSaleLots({ ...sale, targetProceeds: value })).toBeUndefined();
+		}
+	);
+
+	it('rejects unsafe products and near-asymptotic target calculations', () => {
+		expect(
+			calculateStockPurchase({ ...purchase, additionalLots: 1e10, purchasePrice: 1e10 })
+		).toBeUndefined();
+		expect(
+			calculateStockSale({ ...sale, currentLots: 1e10, saleLots: 1e10, salePrice: 1e10 })
+		).toBeUndefined();
+		expect(
+			calculateTargetSaleLots({ ...sale, currentLots: 1e10, salePrice: 1e10, targetProceeds: 1 })
+		).toBeUndefined();
+		expect(calculateAffordableLots(1e10, 1e-10, STOCKBIT_BUY_FEE_RATE)).toBeUndefined();
+		expect(
+			calculateTargetAverage({ ...target, currentLots: 1e8, targetAveragePrice: 450.000000000001 })
+		).toEqual({ status: 'unreachable', reason: 'invalid-input' });
+	});
+
+	it('preserves valid zero purchases, budgets, sales and targets', () => {
+		expect(calculateStockPurchase({ ...purchase, additionalLots: 0 })?.cashRequired).toBe(0);
+		expect(
+			calculateStockPurchase({
+				...purchase,
+				currentLots: 0,
+				currentAveragePrice: 0,
+				additionalLots: 0
+			})?.finalAveragePrice
+		).toBe(0);
+		expect(calculateAffordableLots(0, 450, AJAIB_BUY_FEE_RATE)).toBe(0);
+		expect(calculateStockSale({ ...sale, saleLots: 0 })).toEqual(
+			expect.objectContaining({
+				netProceeds: 0,
+				sellFee: 0,
+				realizedProfitLoss: 0,
+				remainingLots: 10
+			})
+		);
+		expect(calculateTargetSaleLots({ ...sale, targetProceeds: 0 })).toBe(0);
+	});
+});
+
 describe('calculateTargetSaleLots', () => {
 	it('finds the minimum whole lots that meet net proceeds after Stockbit fees', () => {
 		const input = { currentLots: 297, salePrice: 342, sellFeeRate: STOCKBIT_SELL_FEE_RATE };
