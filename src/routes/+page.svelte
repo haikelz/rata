@@ -260,7 +260,10 @@
 			href={resolve('/')}
 			aria-label="Rata, beranda"
 		>
-			<span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+			<svg class="size-5 text-primary" viewBox="16 16 68 68" fill="currentColor" aria-hidden="true">
+				<rect x="28" y="18" width="44" height="9" />
+				<path d="M31 82V60A24 24 0 0 1 55 36H69V50H55A10 10 0 0 0 45 60V82Z" />
+			</svg>
 			<span class="text-lg font-medium tracking-tight text-base-content">Rata</span>
 		</a>
 	</div>

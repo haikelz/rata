@@ -1,4 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" fill="#f5f5f5"/>
-  <path fill="#347554" d="M13 37h9v14h-9zM27.5 27h9v24h-9zM42 13h9v38h-9z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="16 16 68 68">
+	<style>
+		g { fill: #126c42; }
+		@media (prefers-color-scheme: dark) { g { fill: #53bd83; } }
+	</style>
+	<g>
+		<rect x="28" y="18" width="44" height="9"/>
+		<path d="M31 82V60A24 24 0 0 1 55 36H69V50H55A10 10 0 0 0 45 60V82Z"/>
+	</g>
 </svg>

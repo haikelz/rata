@@ -133,32 +133,6 @@ summary {
 	outline-offset: 3px;
 }
 
-.brand-mark {
-	display: grid;
-	grid-template-columns: repeat(3, 0.28rem);
-	align-items: end;
-	gap: 0.18rem;
-	width: 1.2rem;
-	height: 1.2rem;
-}
-
-.brand-mark span {
-	display: block;
-	background: var(--color-primary);
-}
-
-.brand-mark span:nth-child(1) {
-	height: 42%;
-}
-
-.brand-mark span:nth-child(2) {
-	height: 70%;
-}
-
-.brand-mark span:nth-child(3) {
-	height: 100%;
-}
-
 summary::-webkit-details-marker {
 	display: none;
 }
