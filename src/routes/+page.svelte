@@ -312,64 +312,70 @@
 			<fieldset class="grid gap-5">
 				<legend class="mb-5 text-sm font-medium text-base-content/65">Posisi saat ini</legend>
 
-				<label class="form-control grid gap-2" for="current-lots">
-					<span class="label-text font-medium text-base-content">Jumlah lot</span>
-					<input
-						id="current-lots"
-						aria-invalid={!!errors['current-lots']}
-						class="input-bordered numeric input w-full"
-						type="number"
-						min="0"
-						step="1"
-						inputmode="numeric"
-						aria-describedby="current-lots-help current-lots-validation"
-						bind:value={currentLots}
-					/>
+				<div class="grid gap-2">
+					<label class="form-control grid gap-2" for="current-lots">
+						<span class="label-text font-medium text-base-content">Jumlah lot</span>
+						<input
+							id="current-lots"
+							aria-invalid={!!errors['current-lots']}
+							class="input-bordered numeric input w-full"
+							type="number"
+							min="0"
+							step="1"
+							inputmode="numeric"
+							aria-describedby="current-lots-help current-lots-validation"
+							bind:value={currentLots}
+						/>
+					</label>
 					{@render fieldError('current-lots')}
 					<span id="current-lots-help" class="text-xs text-base-content/65"
 						>1 lot = 100 lembar saham</span
 					>
-				</label>
+				</div>
 
 				<div class={`grid gap-5 ${calculatorMode === 'buy' ? 'sm:grid-cols-2' : ''}`}>
-					<label class="form-control grid gap-2" for="current-average">
-						<span class="label-text font-medium text-base-content">Harga rata-rata</span>
-						<span class="input-bordered input flex items-center gap-2">
-							<span class="text-base-content/65" aria-hidden="true">Rp</span>
-							<input
-								id="current-average"
-								aria-invalid={!!errors['current-average']}
-								aria-describedby="current-average-validation"
-								class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-								type="number"
-								min="0"
-								step="0.01"
-								inputmode="decimal"
-								bind:value={currentAveragePrice}
-							/>
-						</span>
-						{@render fieldError('current-average')}
-					</label>
-
-					{#if calculatorMode === 'buy'}
-						<label class="form-control grid gap-2" for="market-price">
-							<span class="label-text font-medium text-base-content">Harga pasar</span>
+					<div class="grid gap-2">
+						<label class="form-control grid gap-2" for="current-average">
+							<span class="label-text font-medium text-base-content">Harga rata-rata</span>
 							<span class="input-bordered input flex items-center gap-2">
 								<span class="text-base-content/65" aria-hidden="true">Rp</span>
 								<input
-									id="market-price"
-									aria-invalid={!!errors['market-price']}
-									aria-describedby="market-price-validation"
+									id="current-average"
+									aria-invalid={!!errors['current-average']}
+									aria-describedby="current-average-validation"
 									class="numeric min-w-0 grow border-0 bg-transparent outline-none"
 									type="number"
-									min="0.01"
+									min="0"
 									step="0.01"
 									inputmode="decimal"
-									bind:value={currentMarketPrice}
+									bind:value={currentAveragePrice}
 								/>
 							</span>
-							{@render fieldError('market-price')}
 						</label>
+						{@render fieldError('current-average')}
+					</div>
+
+					{#if calculatorMode === 'buy'}
+						<div class="grid gap-2">
+							<label class="form-control grid gap-2" for="market-price">
+								<span class="label-text font-medium text-base-content">Harga pasar</span>
+								<span class="input-bordered input flex items-center gap-2">
+									<span class="text-base-content/65" aria-hidden="true">Rp</span>
+									<input
+										id="market-price"
+										aria-invalid={!!errors['market-price']}
+										aria-describedby="market-price-validation"
+										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
+										type="number"
+										min="0.01"
+										step="0.01"
+										inputmode="decimal"
+										bind:value={currentMarketPrice}
+									/>
+								</span>
+							</label>
+							{@render fieldError('market-price')}
+						</div>
 					{/if}
 				</div>
 			</fieldset>
@@ -399,66 +405,72 @@
 							</label>
 						</div>
 						{#if purchaseInputMode === 'lots'}
-							<label class="form-control grid gap-2" for="additional-lots">
-								<span class="label-text font-medium text-base-content">Lot tambahan</span>
-								<input
-									id="additional-lots"
-									aria-invalid={!!errors['additional-lots']}
-									aria-describedby="additional-lots-validation"
-									class="input-bordered numeric input w-full"
-									type="number"
-									min="0"
-									step="1"
-									inputmode="numeric"
-									bind:value={additionalLots}
-								/>
-								{@render fieldError('additional-lots')}
-							</label>
-						{:else}
-							<label class="form-control grid gap-2" for="purchase-budget">
-								<span class="label-text font-medium text-base-content">Dana tersedia</span>
-								<span
-									class="input-bordered input flex items-center gap-2"
-									class:input-error={!!errors['purchase-budget']}
-								>
-									<span class="text-base-content/65" aria-hidden="true">Rp</span>
+							<div class="grid gap-2">
+								<label class="form-control grid gap-2" for="additional-lots">
+									<span class="label-text font-medium text-base-content">Lot tambahan</span>
 									<input
-										id="purchase-budget"
-										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
+										id="additional-lots"
+										aria-invalid={!!errors['additional-lots']}
+										aria-describedby="additional-lots-validation"
+										class="input-bordered numeric input w-full"
 										type="number"
 										min="0"
 										step="1"
 										inputmode="numeric"
-										aria-invalid={!!errors['purchase-budget']}
-										aria-describedby="purchase-budget-help purchase-budget-validation"
-										bind:value={purchaseBudget}
+										bind:value={additionalLots}
 									/>
-								</span>
+								</label>
+								{@render fieldError('additional-lots')}
+							</div>
+						{:else}
+							<div class="grid gap-2">
+								<label class="form-control grid gap-2" for="purchase-budget">
+									<span class="label-text font-medium text-base-content">Dana tersedia</span>
+									<span
+										class="input-bordered input flex items-center gap-2"
+										class:input-error={!!errors['purchase-budget']}
+									>
+										<span class="text-base-content/65" aria-hidden="true">Rp</span>
+										<input
+											id="purchase-budget"
+											class="numeric min-w-0 grow border-0 bg-transparent outline-none"
+											type="number"
+											min="0"
+											step="1"
+											inputmode="numeric"
+											aria-invalid={!!errors['purchase-budget']}
+											aria-describedby="purchase-budget-help purchase-budget-validation"
+											bind:value={purchaseBudget}
+										/>
+									</span>
+								</label>
 								{@render fieldError('purchase-budget')}
 								<span id="purchase-budget-help" class="text-xs text-base-content/65"
 									>Maksimum lot utuh, termasuk fee beli.</span
 								>
-							</label>
+							</div>
 						{/if}
 
-						<label class="form-control grid gap-2" for="purchase-price">
-							<span class="label-text font-medium text-base-content">Harga beli</span>
-							<span class="input-bordered input flex items-center gap-2">
-								<span class="text-base-content/65" aria-hidden="true">Rp</span>
-								<input
-									id="purchase-price"
-									aria-invalid={!!errors['purchase-price']}
-									aria-describedby="purchase-price-validation"
-									class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-									type="number"
-									min="0.01"
-									step="0.01"
-									inputmode="decimal"
-									bind:value={purchasePrice}
-								/>
-							</span>
+						<div class="grid gap-2">
+							<label class="form-control grid gap-2" for="purchase-price">
+								<span class="label-text font-medium text-base-content">Harga beli</span>
+								<span class="input-bordered input flex items-center gap-2">
+									<span class="text-base-content/65" aria-hidden="true">Rp</span>
+									<input
+										id="purchase-price"
+										aria-invalid={!!errors['purchase-price']}
+										aria-describedby="purchase-price-validation"
+										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
+										type="number"
+										min="0.01"
+										step="0.01"
+										inputmode="decimal"
+										bind:value={purchasePrice}
+									/>
+								</span>
+							</label>
 							{@render fieldError('purchase-price')}
-						</label>
+						</div>
 					{:else}
 						<div class="sm:col-span-2">
 							<label class="form-control grid gap-2" for="sale-input-mode">
@@ -476,77 +488,83 @@
 							</label>
 						</div>
 						{#if saleInputMode === 'lots'}
-							<label class="form-control grid gap-2" for="sale-lots">
-								<span class="label-text font-medium text-base-content">Lot dijual</span>
-								<input
-									id="sale-lots"
-									class="input-bordered numeric input w-full"
-									class:input-error={!!errors['sale-lots']}
-									type="number"
-									min="0"
-									max={currentLots}
-									step="1"
-									inputmode="numeric"
-									aria-invalid={!!errors['sale-lots']}
-									aria-describedby="sale-lots-help sale-lots-validation"
-									bind:value={saleLots}
-								/>
+							<div class="grid gap-2">
+								<label class="form-control grid gap-2" for="sale-lots">
+									<span class="label-text font-medium text-base-content">Lot dijual</span>
+									<input
+										id="sale-lots"
+										class="input-bordered numeric input w-full"
+										class:input-error={!!errors['sale-lots']}
+										type="number"
+										min="0"
+										max={currentLots}
+										step="1"
+										inputmode="numeric"
+										aria-invalid={!!errors['sale-lots']}
+										aria-describedby="sale-lots-help sale-lots-validation"
+										bind:value={saleLots}
+									/>
+								</label>
 								{@render fieldError('sale-lots')}
 								<span id="sale-lots-help" class="text-xs text-base-content/65">
 									Lot utuh, tidak melebihi posisi saat ini. Nol berarti tidak menjual.
 								</span>
-							</label>
+							</div>
 						{:else}
-							<label class="form-control grid gap-2" for="target-proceeds">
-								<span class="label-text font-medium text-base-content"
-									>Target minimum dana bersih</span
-								>
-								<span
-									class="input-bordered input flex items-center gap-2"
-									class:input-error={!!errors['target-proceeds']}
-								>
-									<span class="text-base-content/65" aria-hidden="true">Rp</span>
-									<input
-										id="target-proceeds"
-										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-										type="number"
-										min="0"
-										step="1"
-										inputmode="numeric"
-										aria-invalid={!!errors['target-proceeds']}
-										aria-describedby="target-proceeds-help target-proceeds-validation"
-										bind:value={targetProceeds}
-									/>
-								</span>
+							<div class="grid gap-2">
+								<label class="form-control grid gap-2" for="target-proceeds">
+									<span class="label-text font-medium text-base-content"
+										>Target minimum dana bersih</span
+									>
+									<span
+										class="input-bordered input flex items-center gap-2"
+										class:input-error={!!errors['target-proceeds']}
+									>
+										<span class="text-base-content/65" aria-hidden="true">Rp</span>
+										<input
+											id="target-proceeds"
+											class="numeric min-w-0 grow border-0 bg-transparent outline-none"
+											type="number"
+											min="0"
+											step="1"
+											inputmode="numeric"
+											aria-invalid={!!errors['target-proceeds']}
+											aria-describedby="target-proceeds-help target-proceeds-validation"
+											bind:value={targetProceeds}
+										/>
+									</span>
+								</label>
 								{@render fieldError('target-proceeds')}
 								<span id="target-proceeds-help" class="text-xs text-base-content/65"
 									>Minimum dana setelah fee jual. Lot utuh dapat menghasilkan dana lebih dari
 									target.</span
 								>
-							</label>
+							</div>
 						{/if}
 
-						<label class="form-control grid content-start gap-2" for="sale-price">
-							<span class="label-text font-medium text-base-content">Harga jual</span>
-							<span
-								class="input-bordered input flex items-center gap-2"
-								class:input-error={!!errors['sale-price']}
-							>
-								<span class="text-base-content/65" aria-hidden="true">Rp</span>
-								<input
-									id="sale-price"
-									class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-									type="number"
-									min="0.01"
-									step="0.01"
-									inputmode="decimal"
-									aria-invalid={!!errors['sale-price']}
-									aria-describedby="sale-price-validation"
-									bind:value={salePrice}
-								/>
-							</span>
+						<div class="grid content-start gap-2">
+							<label class="form-control grid gap-2" for="sale-price">
+								<span class="label-text font-medium text-base-content">Harga jual</span>
+								<span
+									class="input-bordered input flex items-center gap-2"
+									class:input-error={!!errors['sale-price']}
+								>
+									<span class="text-base-content/65" aria-hidden="true">Rp</span>
+									<input
+										id="sale-price"
+										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
+										type="number"
+										min="0.01"
+										step="0.01"
+										inputmode="decimal"
+										aria-invalid={!!errors['sale-price']}
+										aria-describedby="sale-price-validation"
+										bind:value={salePrice}
+									/>
+								</span>
+							</label>
 							{@render fieldError('sale-price')}
-						</label>
+						</div>
 					{/if}
 				</div>
 
@@ -852,27 +870,29 @@
 
 				<div class="grid border-t border-base-300 lg:grid-cols-2">
 					<div class="border-base-300 p-4 sm:p-8 lg:border-r lg:p-10">
-						<label class="form-control grid max-w-sm gap-2" for="target-average">
-							<span class="label-text font-medium text-base-content">Rata-rata target</span>
-							<span class="input-bordered input flex items-center gap-2">
-								<span class="text-base-content/65" aria-hidden="true">Rp</span>
-								<input
-									id="target-average"
-									class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-									type="number"
-									min="0.01"
-									step="0.01"
-									inputmode="decimal"
-									aria-invalid={!!errors['target-average']}
-									aria-describedby="target-average-help target-average-validation"
-									bind:value={targetAveragePrice}
-								/>
-							</span>
+						<div class="grid max-w-sm gap-2">
+							<label class="form-control grid gap-2" for="target-average">
+								<span class="label-text font-medium text-base-content">Rata-rata target</span>
+								<span class="input-bordered input flex items-center gap-2">
+									<span class="text-base-content/65" aria-hidden="true">Rp</span>
+									<input
+										id="target-average"
+										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
+										type="number"
+										min="0.01"
+										step="0.01"
+										inputmode="decimal"
+										aria-invalid={!!errors['target-average']}
+										aria-describedby="target-average-help target-average-validation"
+										bind:value={targetAveragePrice}
+									/>
+								</span>
+							</label>
 							{@render fieldError('target-average')}
 							<span id="target-average-help" class="text-xs leading-5 text-base-content/65">
 								Harus berada di antara harga beli rencana dan rata-rata saat ini.
 							</span>
-						</label>
+						</div>
 					</div>
 
 					<div class="bg-base-200/35 p-4 sm:p-8 lg:p-10" aria-live="polite">
