@@ -648,7 +648,7 @@
 							<p class="mb-5 text-sm text-base-content/70">
 								Dana {formatRupiah(purchaseBudget)} cukup untuk
 								<strong class="numeric font-medium text-base-content"
-									>{result.additionalShares / LOT_SIZE} lot tambahan</strong
+									>{priceFormatter.format(result.additionalShares / LOT_SIZE)} lot tambahan</strong
 								>
 								termasuk fee beli.{#if result.additionalShares === 0}
 									Dana belum cukup untuk membeli 1 lot.{/if}
@@ -662,7 +662,7 @@
 							<div class="border-b border-base-300 p-5 sm:border-r">
 								<p class="text-sm text-base-content/65">Total lot</p>
 								<p class="numeric mt-2 text-2xl font-medium text-base-content">
-									{result.finalLots} lot
+									{priceFormatter.format(result.finalLots)} lot
 								</p>
 							</div>
 							<div class="border-b border-base-300 p-5">
@@ -767,13 +767,13 @@
 						{#if saleInputMode === 'target'}
 							<p class="mb-5 text-sm leading-6 text-base-content/70" role="status">
 								{#if saleResult.netProceeds < targetProceeds}
-									Target minimum belum tercapai. Menjual seluruh {currentLots} lot menghasilkan dana bersih
-									maksimum {formatRupiah(saleResult.netProceeds)}, masih kurang {formatRupiah(
-										targetProceeds - saleResult.netProceeds
-									)}.
+									Target minimum belum tercapai. Menjual seluruh {priceFormatter.format(
+										currentLots
+									)} lot menghasilkan dana bersih maksimum {formatRupiah(saleResult.netProceeds)},
+									masih kurang {formatRupiah(targetProceeds - saleResult.netProceeds)}.
 								{:else}
 									Jual <strong class="numeric font-medium text-base-content"
-										>{plannedSaleLots} lot</strong
+										>{priceFormatter.format(saleResult.soldShares / LOT_SIZE)} lot</strong
 									>
 									untuk mencapai target minimum dana bersih {formatRupiah(targetProceeds)}.
 									{#if saleResult.netProceeds > targetProceeds}
@@ -791,7 +791,7 @@
 							<div class="border-b border-base-300 p-5 sm:border-r">
 								<p class="text-sm text-base-content/65">Sisa lot</p>
 								<p class="numeric mt-2 text-2xl font-medium text-base-content">
-									{saleResult.remainingLots} lot
+									{priceFormatter.format(saleResult.remainingLots)} lot
 								</p>
 							</div>
 							<div class="border-b border-base-300 p-5">
@@ -908,7 +908,7 @@
 						{#if targetResult.status === 'achievable'}
 							<p class="text-sm text-base-content/65">Lot minimum</p>
 							<p class="numeric mt-2 text-3xl font-medium text-base-content">
-								{targetResult.additionalLots} lot
+								{priceFormatter.format(targetResult.additionalLots)} lot
 							</p>
 							<p class="mt-3 text-sm leading-6 text-base-content/60">
 								Siapkan <strong class="numeric font-medium text-base-content">
