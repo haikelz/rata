@@ -9,8 +9,5 @@ bun.lockb
 /static/
 
 # Agent tooling managed by graft
-.claude/
-.cursor/
-.gemini/
 AGENTS.md
 GEMINI.md

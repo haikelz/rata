@@ -24,3 +24,8 @@ vite.config.ts.timestamp-*
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/
+
+# graft's per-machine agent wiring, regenerated each session.
+/.claude/
+/.cursor/
+/.gemini/
