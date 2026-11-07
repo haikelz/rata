@@ -10,6 +10,8 @@
 		calculateStockSale,
 		calculateTargetAverage,
 		calculateTargetSaleLots,
+		idxTickSize,
+		isOnIdxTick,
 		LOT_SIZE,
 		parseAmount
 	} from '$lib/rata';
@@ -211,6 +213,19 @@
 		return rupiahFormatter.format(value);
 	}
 
+	function tickWarning(price: number): string {
+		if (!Number.isFinite(price) || price <= 0 || isOnIdxTick(price)) return '';
+		const tick = idxTickSize(price);
+		const lower = Math.floor(price / tick) * tick;
+		const options = [lower, lower + tick].filter((option) => option > 0).map(formatRupiah);
+		return `Tidak sesuai fraksi harga BEI (kelipatan ${formatRupiah(tick)}). Coba ${options.join(' atau ')}.`;
+	}
+	let warnings: Partial<Record<keyof typeof errors, string>> = $derived({
+		'market-price': tickWarning(currentMarketPrice),
+		'purchase-price': tickWarning(purchasePrice),
+		'sale-price': tickWarning(salePrice)
+	});
+
 	function formatFeeRate(rate: number): string {
 		return `${feeRateFormatter.format(rate * 100)}%`;
 	}
@@ -258,7 +273,11 @@
 </svelte:head>
 
 {#snippet fieldError(id: keyof typeof errors)}
-	<span id={`${id}-validation`} class="text-xs text-error" aria-live="polite">{errors[id]}</span>
+	<span
+		id={`${id}-validation`}
+		class={['text-xs', errors[id] ? 'text-error' : 'text-warning']}
+		aria-live="polite">{errors[id] || warnings[id]}</span
+	>
 {/snippet}
 
 <a class="skip-link" href="#main-content">Lewati ke kalkulator</a>

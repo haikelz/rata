@@ -29,6 +29,7 @@ Rp342 through Stockbit.
   a target net amount.
 - **Target average:** the fewest lots to buy to bring your average down to a target price.
 - **Fees:** published regular-stock rates for Stockbit and Ajaib.
+- **Price check:** warns when a buy, sell, or market price doesn't fit the IDX tick size.
 - **Private and offline:** no network requests, storage, or analytics. It installs as a PWA and
   works offline.
 

@@ -123,6 +123,19 @@ export function parseAmount(text: string): number {
 	return negative ? -Number(normalized) : Number(normalized);
 }
 
+// IDX price fractions (fraksi harga), rule II-A Kep-00023/BEI/04-2016.
+export function idxTickSize(price: number): number {
+	if (price < 200) return 1;
+	if (price < 500) return 2;
+	if (price < 2_000) return 5;
+	if (price < 5_000) return 10;
+	return 25;
+}
+
+export function isOnIdxTick(price: number): boolean {
+	return Number.isFinite(price) && price > 0 && price % idxTickSize(price) === 0;
+}
+
 function isFiniteNonNegative(value: number): boolean {
 	return Number.isFinite(value) && value >= 0 && value <= Number.MAX_SAFE_INTEGER;
 }

@@ -9,6 +9,8 @@ import {
 	calculateStockSale,
 	calculateTargetAverage,
 	calculateTargetSaleLots,
+	idxTickSize,
+	isOnIdxTick,
 	parseAmount
 } from './rata';
 
@@ -32,6 +34,39 @@ describe('parseAmount', () => {
 
 	it.each(['', 'abc', '1,000,000', '1.2.3', '1e5', '12,', ',5', '--1'])('rejects %j', (text) => {
 		expect(parseAmount(text)).toBeNaN();
+	});
+});
+
+describe('IDX price fractions', () => {
+	it.each([
+		[50, 1],
+		[199, 1],
+		[200, 2],
+		[499, 2],
+		[500, 5],
+		[1_999, 5],
+		[2_000, 10],
+		[4_999, 10],
+		[5_000, 25],
+		[50_000, 25]
+	])('uses a Rp%d price step of Rp%d', (price, tick) => {
+		expect(idxTickSize(price)).toBe(tick);
+	});
+
+	it.each([
+		[150, true],
+		[342, true],
+		[343, false],
+		[1_250, true],
+		[1_253, false],
+		[4_990, true],
+		[5_010, false],
+		[5_025, true],
+		[342.5, false],
+		[0, false],
+		[Number.NaN, false]
+	])('checks Rp%d against the tick table: %s', (price, valid) => {
+		expect(isOnIdxTick(price)).toBe(valid);
 	});
 });
 
