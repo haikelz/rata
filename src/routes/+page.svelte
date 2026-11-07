@@ -361,7 +361,7 @@
 			<fieldset class="grid gap-5">
 				<legend class="mb-5 text-sm font-medium text-base-content/65">Posisi saat ini</legend>
 
-				<div class="grid gap-2">
+				<div class="grid content-start gap-2">
 					<label class="form-control grid gap-2" for="current-lots">
 						<span class="label-text font-medium text-base-content">Jumlah lot</span>
 						<input
@@ -383,7 +383,7 @@
 				</div>
 
 				<div class={`grid gap-5 ${calculatorMode === 'buy' ? 'sm:grid-cols-2' : ''}`}>
-					<div class="grid gap-2">
+					<div class="grid content-start gap-2">
 						<label class="form-control grid gap-2" for="current-average">
 							<span class="label-text font-medium text-base-content">Harga rata-rata</span>
 							<span class="input-bordered input flex w-full items-center gap-2">
@@ -408,7 +408,7 @@
 					</div>
 
 					{#if calculatorMode === 'buy'}
-						<div class="grid gap-2">
+						<div class="grid content-start gap-2">
 							<label class="form-control grid gap-2" for="market-price">
 								<span class="label-text font-medium text-base-content">Harga pasar</span>
 								<span class="input-bordered input flex w-full items-center gap-2">
@@ -457,7 +457,7 @@
 							</label>
 						</div>
 						{#if purchaseInputMode === 'lots'}
-							<div class="grid gap-2">
+							<div class="grid content-start gap-2">
 								<label class="form-control grid gap-2" for="additional-lots">
 									<span class="label-text font-medium text-base-content">Lot tambahan</span>
 									<input
@@ -475,7 +475,7 @@
 								{@render fieldError('additional-lots')}
 							</div>
 						{:else}
-							<div class="grid gap-2">
+							<div class="grid content-start gap-2">
 								<label class="form-control grid gap-2" for="purchase-budget">
 									<span class="label-text font-medium text-base-content">Dana tersedia</span>
 									<span class="input-bordered input flex w-full items-center gap-2">
@@ -500,7 +500,7 @@
 							</div>
 						{/if}
 
-						<div class="grid gap-2">
+						<div class="grid content-start gap-2">
 							<label class="form-control grid gap-2" for="purchase-price">
 								<span class="label-text font-medium text-base-content">Harga beli</span>
 								<span class="input-bordered input flex w-full items-center gap-2">
@@ -537,7 +537,7 @@
 							</label>
 						</div>
 						{#if saleInputMode === 'lots'}
-							<div class="grid gap-2">
+							<div class="grid content-start gap-2">
 								<label class="form-control grid gap-2" for="sale-lots">
 									<span class="label-text font-medium text-base-content">Lot dijual</span>
 									<input
@@ -558,7 +558,7 @@
 								</span>
 							</div>
 						{:else}
-							<div class="grid gap-2">
+							<div class="grid content-start gap-2">
 								<label class="form-control grid gap-2" for="target-proceeds">
 									<span class="label-text font-medium text-base-content"
 										>Target minimum dana bersih</span
