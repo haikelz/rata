@@ -1,3 +1,5 @@
+<img src="static/favicon.svg" alt="Rata logo, a lowercase r with a bar over it" width="56">
+
 # Rata
 
 Rata is a stock calculator for Indonesian equities. You enter your position and a planned order,
