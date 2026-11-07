@@ -58,6 +58,9 @@ export default defineConfig({
 					'client/**/*.{js,css,ico,png,svg,webp,webmanifest,woff2}',
 					'prerendered/**/*.{html,json}'
 				],
+				globIgnores: [
+					'client/**/*-{cyrillic,cyrillic-ext,vietnamese,symbols2}-wght-normal.*.woff2'
+				],
 				navigateFallback: '/',
 				cleanupOutdatedCaches: true
 			}
