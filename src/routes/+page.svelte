@@ -426,10 +426,7 @@
 							<div class="grid gap-2">
 								<label class="form-control grid gap-2" for="purchase-budget">
 									<span class="label-text font-medium text-base-content">Dana tersedia</span>
-									<span
-										class="input-bordered input flex items-center gap-2"
-										class:input-error={!!errors['purchase-budget']}
-									>
+									<span class="input-bordered input flex items-center gap-2">
 										<span class="text-base-content/65" aria-hidden="true">Rp</span>
 										<input
 											id="purchase-budget"
@@ -494,7 +491,6 @@
 									<input
 										id="sale-lots"
 										class="input-bordered numeric input w-full"
-										class:input-error={!!errors['sale-lots']}
 										type="number"
 										min="0"
 										max={currentLots}
@@ -516,10 +512,7 @@
 									<span class="label-text font-medium text-base-content"
 										>Target minimum dana bersih</span
 									>
-									<span
-										class="input-bordered input flex items-center gap-2"
-										class:input-error={!!errors['target-proceeds']}
-									>
+									<span class="input-bordered input flex items-center gap-2">
 										<span class="text-base-content/65" aria-hidden="true">Rp</span>
 										<input
 											id="target-proceeds"
@@ -545,10 +538,7 @@
 						<div class="grid content-start gap-2">
 							<label class="form-control grid gap-2" for="sale-price">
 								<span class="label-text font-medium text-base-content">Harga jual</span>
-								<span
-									class="input-bordered input flex items-center gap-2"
-									class:input-error={!!errors['sale-price']}
-								>
+								<span class="input-bordered input flex items-center gap-2">
 									<span class="text-base-content/65" aria-hidden="true">Rp</span>
 									<input
 										id="sale-price"

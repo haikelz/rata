@@ -128,7 +128,7 @@ summary {
 	transform: translateY(0);
 }
 
-:where(a, button, input, summary):focus-visible {
+:where(a, button, summary):focus-visible {
 	outline: 2px solid var(--color-primary);
 	outline-offset: 3px;
 }
@@ -183,7 +183,17 @@ details[open] .details-toggle {
 }
 
 @media (forced-colors: active) {
-	:where(a, button, input, summary):focus-visible {
+	:where(a, button, summary):focus-visible {
 		outline-color: Highlight;
 	}
+}
+
+.input:focus-within,
+.select:focus {
+	--input-color: var(--color-primary);
+}
+
+.input[aria-invalid='true'],
+.input:has([aria-invalid='true']) {
+	--input-color: var(--color-error);
 }
