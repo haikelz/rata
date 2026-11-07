@@ -595,8 +595,8 @@
 		<div class="border-b border-base-300 bg-base-200/35 p-4 sm:p-8 lg:p-10">
 			<div class="lg:sticky lg:top-26">
 				<p class="mb-4 text-xs leading-5 text-base-content/65">
-					Estimasi uang ditampilkan hingga 4 desimal, bukan pembulatan broker. Fee pecahan Ajaib
-					dipertahankan dalam perhitungan.
+					Fee Stockbit dibulatkan ke bawah ke rupiah penuh. Fee pecahan Ajaib dipertahankan. Nilai
+					lain ditampilkan hingga 4 desimal.
 				</p>
 				{#if calculatorMode === 'buy'}
 					<div class="mb-8">
@@ -969,9 +969,9 @@
 			</p>
 			<p class="mt-4 text-xs leading-5 text-base-content/60">
 				Hasil merupakan estimasi untuk perencanaan, bukan rekomendasi investasi. Cocokkan kembali
-				nilai order dan biaya yang berlaku dengan broker sebelum bertransaksi. Nilai uang
-				ditampilkan hingga 4 angka desimal; pembulatan tampilan bukan kebijakan broker. Estimasi
-				Ajaib mempertahankan fee pecahan tanpa mengasumsikan pembulatan broker.
+				nilai order dan biaya yang berlaku dengan broker sebelum bertransaksi. Fee Stockbit
+				dibulatkan ke bawah ke rupiah penuh, sedangkan estimasi Ajaib mempertahankan fee pecahan.
+				Nilai uang lain ditampilkan hingga 4 angka desimal.
 			</p>
 		</article>
 	</section>
