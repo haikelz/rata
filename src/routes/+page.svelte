@@ -370,9 +370,9 @@
 										aria-describedby="market-price-validation"
 										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
 										type="number"
-										min="0.01"
-										step="0.01"
-										inputmode="decimal"
+										min="1"
+										step="1"
+										inputmode="numeric"
 										bind:value={currentMarketPrice}
 									/>
 								</span>
@@ -462,9 +462,9 @@
 										aria-describedby="purchase-price-validation"
 										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
 										type="number"
-										min="0.01"
-										step="0.01"
-										inputmode="decimal"
+										min="1"
+										step="1"
+										inputmode="numeric"
 										bind:value={purchasePrice}
 									/>
 								</span>
@@ -547,9 +547,9 @@
 										id="sale-price"
 										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
 										type="number"
-										min="0.01"
-										step="0.01"
-										inputmode="decimal"
+										min="1"
+										step="1"
+										inputmode="numeric"
 										aria-invalid={!!errors['sale-price']}
 										aria-describedby="sale-price-validation"
 										bind:value={salePrice}
