@@ -14,6 +14,18 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 			adapter: adapter(),
+			csp: {
+				mode: 'hash',
+				directives: {
+					'default-src': ['self'],
+					'script-src': ['self'],
+					'style-src': ['self', 'unsafe-inline'],
+					'img-src': ['self', 'data:'],
+					'object-src': ['none'],
+					'base-uri': ['self'],
+					'form-action': ['self']
+				}
+			},
 			prerender: { origin: 'https://rata.pages.dev' },
 			serviceWorker: { register: false }
 		}),
