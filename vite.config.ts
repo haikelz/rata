@@ -50,6 +50,29 @@ export default defineConfig({
 				icons: [
 					{ src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
 					{ src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+				],
+				screenshots: [
+					{
+						src: '/screenshots/buy.png',
+						sizes: '2560x1720',
+						type: 'image/png',
+						form_factor: 'wide',
+						label: 'Kalkulator beli dengan harga rata-rata baru dan dana yang dibutuhkan'
+					},
+					{
+						src: '/screenshots/sell.png',
+						sizes: '2560x1720',
+						type: 'image/png',
+						form_factor: 'wide',
+						label: 'Kalkulator jual dengan dana bersih dan untung rugi terealisasi'
+					},
+					{
+						src: '/screenshots/mobile.png',
+						sizes: '780x1688',
+						type: 'image/png',
+						form_factor: 'narrow',
+						label: 'Hasil perhitungan di layar ponsel'
+					}
 				]
 			},
 			workbox: {
@@ -59,7 +82,8 @@ export default defineConfig({
 					'prerendered/**/*.{html,json}'
 				],
 				globIgnores: [
-					'client/**/*-{cyrillic,cyrillic-ext,vietnamese,symbols2}-wght-normal.*.woff2'
+					'client/**/*-{cyrillic,cyrillic-ext,vietnamese,symbols2}-wght-normal.*.woff2',
+					'client/screenshots/**'
 				],
 				navigateFallback: '/',
 				cleanupOutdatedCaches: true
