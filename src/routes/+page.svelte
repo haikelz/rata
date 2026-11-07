@@ -220,6 +220,23 @@
 		const options = [lower, lower + tick].filter((option) => option > 0).map(formatRupiah);
 		return `Tidak sesuai fraksi harga BEI (kelipatan ${formatRupiah(tick)}). Coba ${options.join(' atau ')}.`;
 	}
+	// One short sentence for screen readers instead of re-reading every result tile per keystroke.
+	let resultSummary = $derived.by(() => {
+		if (calculatorMode === 'buy') {
+			if (!result) return '';
+			const lots =
+				purchaseInputMode === 'budget'
+					? `Dana cukup untuk ${priceFormatter.format(result.additionalShares / LOT_SIZE)} lot. `
+					: '';
+			return `${lots}Rata-rata baru ${formatRupiah(result.finalAveragePrice)}. Dana dibutuhkan ${formatRupiah(result.cashRequired)}.`;
+		}
+		if (!saleResult) return '';
+		const lots =
+			saleInputMode === 'target'
+				? `Jual ${priceFormatter.format(saleResult.soldShares / LOT_SIZE)} lot. `
+				: '';
+		return `${lots}Dana bersih ${formatRupiah(saleResult.netProceeds)}. P/L terealisasi ${formatRupiah(saleResult.realizedProfitLoss)}.`;
+	});
 	let warnings: Partial<Record<keyof typeof errors, string>> = $derived({
 		'market-price': tickWarning(currentMarketPrice),
 		'purchase-price': tickWarning(purchasePrice),
@@ -628,6 +645,7 @@
 
 		<div class="border-b border-base-300 bg-base-200/35 p-4 sm:p-8 lg:p-10">
 			<div class="lg:sticky lg:top-26">
+				<p class="sr-only" aria-live="polite">{resultSummary}</p>
 				<p class="mb-4 text-xs leading-5 text-base-content/65">
 					Fee Stockbit dibulatkan ke bawah ke rupiah penuh. Fee pecahan Ajaib dipertahankan. Nilai
 					lain ditampilkan hingga 4 desimal.
@@ -673,11 +691,7 @@
 									Dana belum cukup untuk membeli 1 lot.{/if}
 							</p>
 						{/if}
-						<div
-							class="grid border border-base-300 sm:grid-cols-2"
-							aria-live="polite"
-							aria-atomic="true"
-						>
+						<div class="grid border border-base-300 sm:grid-cols-2">
 							<div class="border-b border-base-300 p-5 sm:border-r">
 								<p class="text-sm text-base-content/65">Total lot</p>
 								<p class="numeric mt-2 text-2xl font-medium text-base-content">
@@ -784,7 +798,7 @@
 
 					{#if saleResult}
 						{#if saleInputMode === 'target'}
-							<p class="mb-5 text-sm leading-6 text-base-content/70" role="status">
+							<p class="mb-5 text-sm leading-6 text-base-content/70">
 								{#if saleResult.netProceeds < targetProceeds}
 									Target minimum belum tercapai. Menjual seluruh {priceFormatter.format(
 										currentLots
@@ -802,11 +816,7 @@
 								{/if}
 							</p>
 						{/if}
-						<div
-							class="grid border border-base-300 sm:grid-cols-2"
-							aria-live="polite"
-							aria-atomic="true"
-						>
+						<div class="grid border border-base-300 sm:grid-cols-2">
 							<div class="border-b border-base-300 p-5 sm:border-r">
 								<p class="text-sm text-base-content/65">Sisa lot</p>
 								<p class="numeric mt-2 text-2xl font-medium text-base-content">
