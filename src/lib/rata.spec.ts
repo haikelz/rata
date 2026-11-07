@@ -8,10 +8,32 @@ import {
 	calculateStockPurchase,
 	calculateStockSale,
 	calculateTargetAverage,
-	calculateTargetSaleLots
+	calculateTargetSaleLots,
+	parseAmount
 } from './rata';
 
 const { stockbit, ajaib } = BROKERAGE_FIRMS;
+
+describe('parseAmount', () => {
+	it.each([
+		['297', 297],
+		['1.250', 1_250],
+		['2.000.000', 2_000_000],
+		['390,37', 390.37],
+		['390.37', 390.37],
+		['1.250,5', 1_250.5],
+		['Rp 1.250', 1_250],
+		[' 2 000 000 ', 2_000_000],
+		['0', 0],
+		['-1', -1]
+	])('reads %j as %d', (text, value) => {
+		expect(parseAmount(text)).toBe(value);
+	});
+
+	it.each(['', 'abc', '1,000,000', '1.2.3', '1e5', '12,', ',5', '--1'])('rejects %j', (text) => {
+		expect(parseAmount(text)).toBeNaN();
+	});
+});
 
 describe('calculation safety and zero transactions', () => {
 	const purchase = {

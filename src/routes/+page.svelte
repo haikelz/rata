@@ -10,7 +10,8 @@
 		calculateStockSale,
 		calculateTargetAverage,
 		calculateTargetSaleLots,
-		LOT_SIZE
+		LOT_SIZE,
+		parseAmount
 	} from '$lib/rata';
 
 	const seoTitle = 'Kalkulator Harga Rata-rata, Beli & Jual Saham | Rata';
@@ -70,18 +71,32 @@
 	let calculatorMode = $state<CalculatorMode>('buy');
 	let brokerageFirmId = $state<BrokerageFirmId>('stockbit');
 	let brokerageFirm = $derived(BROKERAGE_FIRMS[brokerageFirmId]);
-	let currentLots = $state(297);
-	let currentAveragePrice = $state(397);
-	let currentMarketPrice = $state(342);
-	let additionalLots = $state(39);
+	const example = {
+		'current-lots': '297',
+		'current-average': '397',
+		'market-price': '342',
+		'additional-lots': '39',
+		'purchase-budget': '2.000.000',
+		'purchase-price': '342',
+		'sale-lots': '39',
+		'target-proceeds': '2.000.000',
+		'sale-price': '342',
+		'target-average': '380'
+	};
+	type AmountField = keyof typeof example;
+	let amounts = $state({ ...example });
+	let currentLots = $derived(parseAmount(amounts['current-lots']));
+	let currentAveragePrice = $derived(parseAmount(amounts['current-average']));
+	let currentMarketPrice = $derived(parseAmount(amounts['market-price']));
+	let additionalLots = $derived(parseAmount(amounts['additional-lots']));
 	let purchaseInputMode = $state<'lots' | 'budget'>('lots');
-	let purchaseBudget = $state(2_000_000);
-	let purchasePrice = $state(342);
-	let saleLots = $state(39);
+	let purchaseBudget = $derived(parseAmount(amounts['purchase-budget']));
+	let purchasePrice = $derived(parseAmount(amounts['purchase-price']));
+	let saleLots = $derived(parseAmount(amounts['sale-lots']));
 	let saleInputMode = $state<'lots' | 'target'>('lots');
-	let targetProceeds = $state(2_000_000);
-	let salePrice = $state(342);
-	let targetAveragePrice = $state(380);
+	let targetProceeds = $derived(parseAmount(amounts['target-proceeds']));
+	let salePrice = $derived(parseAmount(amounts['sale-price']));
+	let targetAveragePrice = $derived(parseAmount(amounts['target-average']));
 	let affordableLots = $derived(
 		calculateAffordableLots(purchaseBudget, purchasePrice, brokerageFirm)
 	);
@@ -201,18 +216,15 @@
 	}
 
 	function resetExample(): void {
-		currentLots = 297;
-		currentAveragePrice = 397;
-		currentMarketPrice = 342;
-		additionalLots = 39;
+		amounts = { ...example };
 		purchaseInputMode = 'lots';
-		purchaseBudget = 2_000_000;
-		purchasePrice = 342;
-		saleLots = 39;
 		saleInputMode = 'lots';
-		targetProceeds = 2_000_000;
-		salePrice = 342;
-		targetAveragePrice = 380;
+	}
+
+	// Show what was understood: 2000000 becomes 2.000.000, 390.37 becomes 390,37.
+	function tidy(field: AmountField): void {
+		const value = parseAmount(amounts[field]);
+		if (Number.isFinite(value)) amounts[field] = priceFormatter.format(value);
 	}
 </script>
 
@@ -320,12 +332,12 @@
 							id="current-lots"
 							aria-invalid={!!errors['current-lots']}
 							class="input-bordered numeric input w-full"
-							type="number"
-							min="0"
-							step="1"
+							type="text"
+							autocomplete="off"
 							inputmode="numeric"
 							aria-describedby="current-lots-help current-lots-validation"
-							bind:value={currentLots}
+							bind:value={amounts['current-lots']}
+							onblur={() => tidy('current-lots')}
 						/>
 					</label>
 					{@render fieldError('current-lots')}
@@ -343,17 +355,20 @@
 								<input
 									id="current-average"
 									aria-invalid={!!errors['current-average']}
-									aria-describedby="current-average-validation"
+									aria-describedby="current-average-help current-average-validation"
 									class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-									type="number"
-									min="0"
-									step="0.01"
+									type="text"
+									autocomplete="off"
 									inputmode="decimal"
-									bind:value={currentAveragePrice}
+									bind:value={amounts['current-average']}
+									onblur={() => tidy('current-average')}
 								/>
 							</span>
 						</label>
 						{@render fieldError('current-average')}
+						<span id="current-average-help" class="text-xs text-base-content/65"
+							>Pakai koma untuk desimal, misalnya 390,37.</span
+						>
 					</div>
 
 					{#if calculatorMode === 'buy'}
@@ -367,11 +382,11 @@
 										aria-invalid={!!errors['market-price']}
 										aria-describedby="market-price-validation"
 										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-										type="number"
-										min="1"
-										step="1"
+										type="text"
+										autocomplete="off"
 										inputmode="numeric"
-										bind:value={currentMarketPrice}
+										bind:value={amounts['market-price']}
+										onblur={() => tidy('market-price')}
 									/>
 								</span>
 							</label>
@@ -414,11 +429,11 @@
 										aria-invalid={!!errors['additional-lots']}
 										aria-describedby="additional-lots-validation"
 										class="input-bordered numeric input w-full"
-										type="number"
-										min="0"
-										step="1"
+										type="text"
+										autocomplete="off"
 										inputmode="numeric"
-										bind:value={additionalLots}
+										bind:value={amounts['additional-lots']}
+										onblur={() => tidy('additional-lots')}
 									/>
 								</label>
 								{@render fieldError('additional-lots')}
@@ -432,13 +447,13 @@
 										<input
 											id="purchase-budget"
 											class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-											type="number"
-											min="0"
-											step="1"
+											type="text"
+											autocomplete="off"
 											inputmode="numeric"
 											aria-invalid={!!errors['purchase-budget']}
 											aria-describedby="purchase-budget-help purchase-budget-validation"
-											bind:value={purchaseBudget}
+											bind:value={amounts['purchase-budget']}
+											onblur={() => tidy('purchase-budget')}
 										/>
 									</span>
 								</label>
@@ -459,11 +474,11 @@
 										aria-invalid={!!errors['purchase-price']}
 										aria-describedby="purchase-price-validation"
 										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-										type="number"
-										min="1"
-										step="1"
+										type="text"
+										autocomplete="off"
 										inputmode="numeric"
-										bind:value={purchasePrice}
+										bind:value={amounts['purchase-price']}
+										onblur={() => tidy('purchase-price')}
 									/>
 								</span>
 							</label>
@@ -492,14 +507,13 @@
 									<input
 										id="sale-lots"
 										class="input-bordered numeric input w-full"
-										type="number"
-										min="0"
-										max={currentLots}
-										step="1"
+										type="text"
+										autocomplete="off"
 										inputmode="numeric"
 										aria-invalid={!!errors['sale-lots']}
 										aria-describedby="sale-lots-help sale-lots-validation"
-										bind:value={saleLots}
+										bind:value={amounts['sale-lots']}
+										onblur={() => tidy('sale-lots')}
 									/>
 								</label>
 								{@render fieldError('sale-lots')}
@@ -518,13 +532,13 @@
 										<input
 											id="target-proceeds"
 											class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-											type="number"
-											min="0"
-											step="1"
+											type="text"
+											autocomplete="off"
 											inputmode="numeric"
 											aria-invalid={!!errors['target-proceeds']}
 											aria-describedby="target-proceeds-help target-proceeds-validation"
-											bind:value={targetProceeds}
+											bind:value={amounts['target-proceeds']}
+											onblur={() => tidy('target-proceeds')}
 										/>
 									</span>
 								</label>
@@ -544,13 +558,13 @@
 									<input
 										id="sale-price"
 										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-										type="number"
-										min="1"
-										step="1"
+										type="text"
+										autocomplete="off"
 										inputmode="numeric"
 										aria-invalid={!!errors['sale-price']}
 										aria-describedby="sale-price-validation"
-										bind:value={salePrice}
+										bind:value={amounts['sale-price']}
+										onblur={() => tidy('sale-price')}
 									/>
 								</span>
 							</label>
@@ -873,13 +887,13 @@
 									<input
 										id="target-average"
 										class="numeric min-w-0 grow border-0 bg-transparent outline-none"
-										type="number"
-										min="0.01"
-										step="0.01"
+										type="text"
+										autocomplete="off"
 										inputmode="decimal"
 										aria-invalid={!!errors['target-average']}
 										aria-describedby="target-average-help target-average-validation"
-										bind:value={targetAveragePrice}
+										bind:value={amounts['target-average']}
+										onblur={() => tidy('target-average')}
 									/>
 								</span>
 							</label>

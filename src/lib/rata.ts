@@ -103,6 +103,26 @@ export type TargetAverageResult =
 			reason: 'invalid-input' | 'target-at-or-below-purchase-price';
 	  };
 
+// Reads amounts the way Indonesian users type them: "." groups thousands and "," marks
+// decimals (1.250 = 1250, 390,37 = 390.37). A lone "." not followed by exactly three digits
+// is read as a decimal point (390.37). Anything else is NaN so validation can reject it.
+export function parseAmount(text: string): number {
+	const compact = text
+		.trim()
+		.replace(/^rp\.?/i, '')
+		.replace(/\s/g, '');
+	const negative = compact.startsWith('-');
+	const digits = negative ? compact.slice(1) : compact;
+	let normalized: string | undefined;
+	if (/^\d{1,3}(\.\d{3})*(,\d+)?$/.test(digits) || /^\d+(,\d+)?$/.test(digits)) {
+		normalized = digits.replaceAll('.', '').replace(',', '.');
+	} else if (/^\d+\.\d+$/.test(digits)) {
+		normalized = digits;
+	}
+	if (normalized === undefined) return Number.NaN;
+	return negative ? -Number(normalized) : Number(normalized);
+}
+
 function isFiniteNonNegative(value: number): boolean {
 	return Number.isFinite(value) && value >= 0 && value <= Number.MAX_SAFE_INTEGER;
 }
