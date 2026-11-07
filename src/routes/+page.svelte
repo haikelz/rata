@@ -9,7 +9,8 @@
 		calculateStockPurchase,
 		calculateStockSale,
 		calculateTargetAverage,
-		calculateTargetSaleLots
+		calculateTargetSaleLots,
+		LOT_SIZE
 	} from '$lib/rata';
 
 	const seoTitle = 'Kalkulator Harga Rata-rata, Beli & Jual Saham | Rata';
@@ -129,12 +130,11 @@
 	);
 
 	function inputError(value: number, minimum = 0, lots = false): string {
-		if (value === undefined || !Number.isFinite(value))
-			return 'Masukkan angka yang valid; kolom ini wajib diisi.';
+		if (!Number.isFinite(value)) return 'Masukkan angka yang valid; kolom ini wajib diisi.';
 		if (value < minimum || (minimum > 0 && value === 0))
 			return minimum > 0 ? 'Masukkan harga lebih dari nol.' : 'Nilai tidak boleh negatif.';
 		if (lots && !Number.isInteger(value)) return 'Lot harus berupa bilangan bulat.';
-		if (value > Number.MAX_SAFE_INTEGER || (lots && !Number.isSafeInteger(value * 100)))
+		if (value > Number.MAX_SAFE_INTEGER || (lots && !Number.isSafeInteger(value * LOT_SIZE)))
 			return 'Nilai terlalu besar untuk dihitung dengan aman. Kurangi nilainya.';
 		return '';
 	}
@@ -142,14 +142,13 @@
 		'Hasil perhitungan terlalu besar untuk dihitung dengan aman. Kurangi lot atau harga.';
 	let errors = $derived({
 		'current-lots':
-			inputError(currentLots) ||
 			inputError(currentLots, 0, true) ||
 			(calculatorMode === 'sell' && currentLots === 0
 				? 'Masukkan jumlah lot saat ini lebih dari nol.'
 				: ''),
 		'current-average':
 			inputError(currentAveragePrice, currentLots > 0 ? Number.MIN_VALUE : 0) ||
-			(currentLots * 100 * currentAveragePrice > Number.MAX_SAFE_INTEGER ? unsafeMessage : ''),
+			(currentLots * LOT_SIZE * currentAveragePrice > Number.MAX_SAFE_INTEGER ? unsafeMessage : ''),
 		'market-price':
 			inputError(currentMarketPrice, Number.MIN_VALUE) ||
 			(result === undefined &&
@@ -173,7 +172,7 @@
 		'target-proceeds': inputError(targetProceeds),
 		'sale-price':
 			inputError(salePrice, Number.MIN_VALUE) ||
-			((saleInputMode === 'target' ? currentLots : saleLots) * 100 * salePrice >
+			((saleInputMode === 'target' ? currentLots : saleLots) * LOT_SIZE * salePrice >
 				Number.MAX_SAFE_INTEGER ||
 			(saleResult === undefined &&
 				currentLots > 0 &&
@@ -195,10 +194,6 @@
 
 	function formatRupiah(value: number): string {
 		return rupiahFormatter.format(value);
-	}
-
-	function formatPrice(value: number): string {
-		return formatRupiah(value);
 	}
 
 	function formatFeeRate(rate: number): string {
@@ -608,13 +603,13 @@
 							<p
 								class="numeric mt-3 text-4xl font-medium tracking-[-0.04em] text-base-content sm:text-5xl"
 							>
-								{formatPrice(result.finalAveragePrice)}
+								{formatRupiah(result.finalAveragePrice)}
 							</p>
 							{#if currentLots > 0}
 								<p class="mt-2 text-sm text-base-content/60">
 									Rata-rata baru per lembar,
 									<span class="numeric">
-										{formatPrice(Math.abs(result.finalAveragePrice - currentAveragePrice))}
+										{formatRupiah(Math.abs(result.finalAveragePrice - currentAveragePrice))}
 									</span>
 									{result.finalAveragePrice <= currentAveragePrice
 										? ' lebih rendah'
@@ -636,7 +631,7 @@
 							<p class="mb-5 text-sm text-base-content/70">
 								Dana {formatRupiah(purchaseBudget)} cukup untuk
 								<strong class="numeric font-medium text-base-content"
-									>{result.additionalShares / 100} lot tambahan</strong
+									>{result.additionalShares / LOT_SIZE} lot tambahan</strong
 								>
 								termasuk fee beli.{#if result.additionalShares === 0}
 									Dana belum cukup untuk membeli 1 lot.{/if}
@@ -740,7 +735,7 @@
 							{:else}
 								<p class="mt-1 text-sm text-base-content/60">
 									Harga rata-rata posisi tersisa tetap
-									<span class="numeric">{formatPrice(saleResult.remainingAveragePrice)}</span>.
+									<span class="numeric">{formatRupiah(saleResult.remainingAveragePrice)}</span>.
 								</p>
 							{/if}
 						{:else}
@@ -907,7 +902,7 @@
 									{formatRupiah(targetResult.buyFee)}</strong
 								>. Rata-rata hasil pembulatan lot menjadi
 								<strong class="numeric font-medium text-base-content">
-									{formatPrice(targetResult.resultingAveragePrice)}</strong
+									{formatRupiah(targetResult.resultingAveragePrice)}</strong
 								>.
 							</p>
 						{:else if targetResult.status === 'already-reached'}
@@ -919,7 +914,7 @@
 							<p class="font-medium text-warning">Target belum dapat dicapai.</p>
 							<p class="mt-2 text-sm leading-6 text-base-content/60">
 								Rata-rata target harus lebih tinggi dari harga beli rencana
-								<span class="numeric">{formatPrice(purchasePrice)}</span>.
+								<span class="numeric">{formatRupiah(purchasePrice)}</span>.
 							</p>
 						{:else if currentLots === 0}
 							<p class="text-sm leading-6 text-base-content/60">
