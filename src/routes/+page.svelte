@@ -186,7 +186,9 @@
 				: ''),
 		'target-average':
 			inputError(targetAveragePrice, Number.MIN_VALUE) ||
-			(targetResult.status === 'unreachable' && targetResult.reason === 'invalid-input'
+			(targetResult.status === 'unreachable' &&
+			targetResult.reason === 'invalid-input' &&
+			currentLots !== 0
 				? 'Periksa posisi dan harga beli; hasil target harus berada dalam batas perhitungan aman.'
 				: '')
 	});
@@ -607,15 +609,19 @@
 							>
 								{formatPrice(result.finalAveragePrice)}
 							</p>
-							<p class="mt-2 text-sm text-base-content/60">
-								Rata-rata baru per lembar,
-								<span class="numeric">
-									{formatPrice(Math.abs(result.finalAveragePrice - currentAveragePrice))}
-								</span>
-								{result.finalAveragePrice <= currentAveragePrice
-									? ' lebih rendah'
-									: ' lebih tinggi'}.
-							</p>
+							{#if currentLots > 0}
+								<p class="mt-2 text-sm text-base-content/60">
+									Rata-rata baru per lembar,
+									<span class="numeric">
+										{formatPrice(Math.abs(result.finalAveragePrice - currentAveragePrice))}
+									</span>
+									{result.finalAveragePrice <= currentAveragePrice
+										? ' lebih rendah'
+										: ' lebih tinggi'}.
+								</p>
+							{:else}
+								<p class="mt-2 text-sm text-base-content/60">Rata-rata posisi baru per lembar.</p>
+							{/if}
 						{:else}
 							<p class="mt-3 text-base font-medium text-error" role="alert">
 								Periksa pesan di bawah kolom input. Gunakan nilai valid dalam batas perhitungan
@@ -913,6 +919,10 @@
 							<p class="mt-2 text-sm leading-6 text-base-content/60">
 								Rata-rata target harus lebih tinggi dari harga beli rencana
 								<span class="numeric">{formatPrice(purchasePrice)}</span>.
+							</p>
+						{:else if currentLots === 0}
+							<p class="text-sm leading-6 text-base-content/60">
+								Isi jumlah lot dan harga rata-rata saat ini untuk menghitung target.
 							</p>
 						{:else}
 							<p class="font-medium text-error">
