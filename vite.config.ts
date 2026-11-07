@@ -26,7 +26,7 @@ export default defineConfig({
 					'form-action': ['self']
 				}
 			},
-			prerender: { origin: 'https://rata.pages.dev' },
+			prerender: { origin: 'https://rata.ekel.dev' },
 			serviceWorker: { register: false }
 		}),
 		SvelteKitPWA({
