@@ -338,7 +338,7 @@
 					<div class="grid gap-2">
 						<label class="form-control grid gap-2" for="current-average">
 							<span class="label-text font-medium text-base-content">Harga rata-rata</span>
-							<span class="input-bordered input flex items-center gap-2">
+							<span class="input-bordered input flex w-full items-center gap-2">
 								<span class="text-base-content/65" aria-hidden="true">Rp</span>
 								<input
 									id="current-average"
@@ -360,7 +360,7 @@
 						<div class="grid gap-2">
 							<label class="form-control grid gap-2" for="market-price">
 								<span class="label-text font-medium text-base-content">Harga pasar</span>
-								<span class="input-bordered input flex items-center gap-2">
+								<span class="input-bordered input flex w-full items-center gap-2">
 									<span class="text-base-content/65" aria-hidden="true">Rp</span>
 									<input
 										id="market-price"
@@ -427,7 +427,7 @@
 							<div class="grid gap-2">
 								<label class="form-control grid gap-2" for="purchase-budget">
 									<span class="label-text font-medium text-base-content">Dana tersedia</span>
-									<span class="input-bordered input flex items-center gap-2">
+									<span class="input-bordered input flex w-full items-center gap-2">
 										<span class="text-base-content/65" aria-hidden="true">Rp</span>
 										<input
 											id="purchase-budget"
@@ -452,7 +452,7 @@
 						<div class="grid gap-2">
 							<label class="form-control grid gap-2" for="purchase-price">
 								<span class="label-text font-medium text-base-content">Harga beli</span>
-								<span class="input-bordered input flex items-center gap-2">
+								<span class="input-bordered input flex w-full items-center gap-2">
 									<span class="text-base-content/65" aria-hidden="true">Rp</span>
 									<input
 										id="purchase-price"
@@ -513,7 +513,7 @@
 									<span class="label-text font-medium text-base-content"
 										>Target minimum dana bersih</span
 									>
-									<span class="input-bordered input flex items-center gap-2">
+									<span class="input-bordered input flex w-full items-center gap-2">
 										<span class="text-base-content/65" aria-hidden="true">Rp</span>
 										<input
 											id="target-proceeds"
@@ -539,7 +539,7 @@
 						<div class="grid content-start gap-2">
 							<label class="form-control grid gap-2" for="sale-price">
 								<span class="label-text font-medium text-base-content">Harga jual</span>
-								<span class="input-bordered input flex items-center gap-2">
+								<span class="input-bordered input flex w-full items-center gap-2">
 									<span class="text-base-content/65" aria-hidden="true">Rp</span>
 									<input
 										id="sale-price"
@@ -868,7 +868,7 @@
 						<div class="grid max-w-sm gap-2">
 							<label class="form-control grid gap-2" for="target-average">
 								<span class="label-text font-medium text-base-content">Rata-rata target</span>
-								<span class="input-bordered input flex items-center gap-2">
+								<span class="input-bordered input flex w-full items-center gap-2">
 									<span class="text-base-content/65" aria-hidden="true">Rp</span>
 									<input
 										id="target-average"
