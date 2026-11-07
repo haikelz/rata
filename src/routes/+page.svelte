@@ -225,7 +225,8 @@
 	<title>{seoTitle}</title>
 	<meta name="description" content={seoDescription} />
 	<meta name="robots" content="index, follow, max-image-preview:large" />
-	<meta name="theme-color" content="#f5f5f5" />
+	<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f5f5" />
+	<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101010" />
 	<link rel="canonical" href={canonicalUrl} />
 
 	<meta property="og:type" content="website" />
