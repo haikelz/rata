@@ -37,3 +37,6 @@ jobs:
 
       - name: Build application
         run: bun run build
+
+      - name: Check prerendered URLs use the production origin
+        run: '! grep -rq sveltekit-prerender .svelte-kit/output/prerendered'

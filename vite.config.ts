@@ -14,6 +14,7 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 			adapter: adapter(),
+			prerender: { origin: 'https://rata.pages.dev' },
 			serviceWorker: { register: false }
 		}),
 		SvelteKitPWA({
