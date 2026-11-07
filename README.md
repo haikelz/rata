@@ -10,11 +10,13 @@ number of lots needed to reach a target average price.
 ## Features
 
 - Calculate the weighted average price after a planned purchase.
+- Find the maximum whole lots an available budget can buy, including the buy fee.
 - Convert lots to shares using the Indonesian market standard of 100 shares per lot.
 - Select Stockbit or Ajaib and apply its published regular-stock buy and sell fees.
 - Estimate required buying power and net sale proceeds after brokerage fees.
 - Project the final lot count, share count, invested value, and unrealized profit or loss.
 - Estimate realized profit or loss after a partial or complete sale.
+- Find the minimum whole lots to sell to reach a target net proceeds amount.
 - Find the minimum whole-lot purchase required to reach a target average price.
 - Reject non-positive prices, fractional lots, and sales larger than the current position.
 - Keep all portfolio data and calculations in the browser.
@@ -51,6 +53,10 @@ A partial sale does not change the average price of the remaining shares. Transa
 excluded from the displayed purchase average and invested value. Realized profit or loss includes
 the planned sell fee but excludes historical buy fees because they cannot be derived from the
 available inputs.
+
+Stockbit buy and sell fees round down to the whole rupiah, matching an observed Stockbit buy order.
+Ajaib fees keep their fractional value because Rata does not assume Ajaib's rounding. Other money
+values display up to four decimal places.
 
 ### Brokerage Fee Assumptions
 
@@ -156,10 +162,10 @@ Expected results:
 | Result                     |        Value |
 | -------------------------- | -----------: |
 | Final position             |     336 lots |
-| Final average price        |     Rp390,62 |
+| Final average price        |   Rp390,6161 |
 | Final invested value       | Rp13.124.700 |
-| Estimated Stockbit buy fee |      Rp2.001 |
-| Required buying power      |  Rp1.335.801 |
+| Estimated Stockbit buy fee |      Rp2.000 |
+| Required buying power      |  Rp1.335.800 |
 
 The sell tab uses the same current position with a planned sale of 39 lots at Rp342:
 
@@ -167,19 +173,19 @@ The sell tab uses the same current position with a planned sale of 39 lots at Rp
 | ------------------------------ | ----------: |
 | Remaining position             |    258 lots |
 | Gross sale value               | Rp1.333.800 |
-| Estimated Stockbit sell fee    |     Rp3.335 |
+| Estimated Stockbit sell fee    |     Rp3.334 |
 | Net proceeds                   | Rp1.330.466 |
-| Estimated realized profit/loss |  −Rp217.835 |
+| Estimated realized profit/loss |  −Rp217.834 |
 
 Selecting Ajaib with the same example changes only the applicable brokerage fees:
 
-| Result                   |       Value |
-| ------------------------ | ----------: |
-| Estimated Ajaib buy fee  |     Rp2.018 |
-| Required buying power    | Rp1.335.818 |
-| Estimated Ajaib sell fee |     Rp3.352 |
-| Net sale proceeds        | Rp1.330.448 |
-| Estimated realized loss  |  −Rp217.852 |
+| Result                   |            Value |
+| ------------------------ | ---------------: |
+| Estimated Ajaib buy fee  |     Rp2.018,0394 |
+| Required buying power    | Rp1.335.818,0394 |
+| Estimated Ajaib sell fee |     Rp3.351,8394 |
+| Net sale proceeds        | Rp1.330.448,1606 |
+| Estimated realized loss  |  −Rp217.851,8394 |
 
 ## Project Structure
 
