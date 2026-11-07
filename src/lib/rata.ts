@@ -10,18 +10,21 @@ export type BrokerageFirm = {
 	name: string;
 	buyFeeRate: number;
 	sellFeeRate: number;
+	roundsFeesDown: boolean;
 };
 
 export const BROKERAGE_FIRMS: Record<BrokerageFirmId, BrokerageFirm> = {
 	stockbit: {
 		name: 'Stockbit',
 		buyFeeRate: STOCKBIT_BUY_FEE_RATE,
-		sellFeeRate: STOCKBIT_SELL_FEE_RATE
+		sellFeeRate: STOCKBIT_SELL_FEE_RATE,
+		roundsFeesDown: true
 	},
 	ajaib: {
 		name: 'Ajaib',
 		buyFeeRate: AJAIB_BUY_FEE_RATE,
-		sellFeeRate: AJAIB_SELL_FEE_RATE
+		sellFeeRate: AJAIB_SELL_FEE_RATE,
+		roundsFeesDown: false
 	}
 };
 
@@ -31,7 +34,7 @@ export type StockPurchaseInput = {
 	currentMarketPrice: number;
 	additionalLots: number;
 	purchasePrice: number;
-	buyFeeRate: number;
+	brokerage: BrokerageFirm;
 };
 
 export type StockPurchaseResult = {
@@ -55,10 +58,10 @@ export type StockSaleInput = {
 	currentAveragePrice: number;
 	saleLots: number;
 	salePrice: number;
-	sellFeeRate: number;
+	brokerage: BrokerageFirm;
 };
 
-export type TargetSaleInput = Pick<StockSaleInput, 'currentLots' | 'salePrice' | 'sellFeeRate'> & {
+export type TargetSaleInput = Pick<StockSaleInput, 'currentLots' | 'salePrice' | 'brokerage'> & {
 	targetProceeds: number;
 };
 
@@ -78,7 +81,7 @@ export type StockSaleResult = {
 
 export type TargetAverageInput = Pick<
 	StockPurchaseInput,
-	'currentLots' | 'currentAveragePrice' | 'purchasePrice' | 'buyFeeRate'
+	'currentLots' | 'currentAveragePrice' | 'purchasePrice' | 'brokerage'
 > & {
 	targetAveragePrice: number;
 };
@@ -116,14 +119,14 @@ function isSafeCalculation(...values: number[]): boolean {
 	);
 }
 
-function calculateBuyFee(purchaseValue: number, buyFeeRate: number): number {
-	const fee = purchaseValue * buyFeeRate;
-	return buyFeeRate === STOCKBIT_BUY_FEE_RATE ? Math.floor(fee) : fee;
+function calculateBuyFee(purchaseValue: number, brokerage: BrokerageFirm): number {
+	const fee = purchaseValue * brokerage.buyFeeRate;
+	return brokerage.roundsFeesDown ? Math.floor(fee) : fee;
 }
 
-function calculateSellFee(saleValue: number, sellFeeRate: number): number {
-	const fee = saleValue * sellFeeRate;
-	return sellFeeRate === STOCKBIT_SELL_FEE_RATE ? Math.floor(fee) : fee;
+function calculateSellFee(saleValue: number, brokerage: BrokerageFirm): number {
+	const fee = saleValue * brokerage.sellFeeRate;
+	return brokerage.roundsFeesDown ? Math.floor(fee) : fee;
 }
 
 export function calculateTargetSaleLots(input: TargetSaleInput): number | undefined {
@@ -132,15 +135,15 @@ export function calculateTargetSaleLots(input: TargetSaleInput): number | undefi
 		!isFiniteNonNegative(input.targetProceeds) ||
 		!Number.isFinite(input.salePrice) ||
 		input.salePrice <= 0 ||
-		!isFiniteNonNegative(input.sellFeeRate) ||
-		input.sellFeeRate >= 1
+		!isFiniteNonNegative(input.brokerage.sellFeeRate) ||
+		input.brokerage.sellFeeRate >= 1
 	) {
 		return undefined;
 	}
 
 	const proceeds = (lots: number) => {
 		const saleValue = lots * LOT_SIZE * input.salePrice;
-		return saleValue - calculateSellFee(saleValue, input.sellFeeRate);
+		return saleValue - calculateSellFee(saleValue, input.brokerage);
 	};
 	if (
 		!isSafeCalculation(
@@ -163,24 +166,24 @@ export function calculateTargetSaleLots(input: TargetSaleInput): number | undefi
 export function calculateAffordableLots(
 	budget: number,
 	purchasePrice: number,
-	buyFeeRate: number
+	brokerage: BrokerageFirm
 ): number | undefined {
 	if (
 		!isFiniteNonNegative(budget) ||
 		!Number.isFinite(purchasePrice) ||
 		purchasePrice <= 0 ||
-		!isFiniteNonNegative(buyFeeRate)
+		!isFiniteNonNegative(brokerage.buyFeeRate)
 	) {
 		return undefined;
 	}
 
-	const costPerLot = LOT_SIZE * purchasePrice * (1 + buyFeeRate);
+	const costPerLot = LOT_SIZE * purchasePrice * (1 + brokerage.buyFeeRate);
 	if (!isSafeCalculation(costPerLot) || costPerLot <= 0) return undefined;
 	const lots = Math.floor(budget / costPerLot);
 	if (!isValidLotAmount(lots)) return undefined;
 	const cashRequired = (count: number) => {
 		const purchaseValue = count * LOT_SIZE * purchasePrice;
-		return purchaseValue + calculateBuyFee(purchaseValue, buyFeeRate);
+		return purchaseValue + calculateBuyFee(purchaseValue, brokerage);
 	};
 	if (cashRequired(lots) > budget) return lots - 1;
 	return isValidLotAmount(lots + 1) && cashRequired(lots + 1) <= budget ? lots + 1 : lots;
@@ -195,7 +198,7 @@ export function calculateStockPurchase(input: StockPurchaseInput): StockPurchase
 		Number.isFinite(input.currentMarketPrice) &&
 		input.purchasePrice > 0 &&
 		Number.isFinite(input.purchasePrice) &&
-		isFiniteNonNegative(input.buyFeeRate) &&
+		isFiniteNonNegative(input.brokerage.buyFeeRate) &&
 		(input.currentLots === 0 || input.currentAveragePrice > 0);
 
 	if (!isValidInput) {
@@ -206,7 +209,7 @@ export function calculateStockPurchase(input: StockPurchaseInput): StockPurchase
 	const currentInvestmentValue = currentShares * input.currentAveragePrice;
 	const additionalShares = input.additionalLots * LOT_SIZE;
 	const purchaseValue = additionalShares * input.purchasePrice;
-	const buyFee = calculateBuyFee(purchaseValue, input.buyFeeRate);
+	const buyFee = calculateBuyFee(purchaseValue, input.brokerage);
 	const cashRequired = purchaseValue + buyFee;
 	const finalLots = input.currentLots + input.additionalLots;
 	const finalShares = finalLots * LOT_SIZE;
@@ -262,7 +265,7 @@ export function calculateStockSale(input: StockSaleInput): StockSaleResult | und
 		Number.isFinite(input.currentAveragePrice) &&
 		input.salePrice > 0 &&
 		Number.isFinite(input.salePrice) &&
-		isFiniteNonNegative(input.sellFeeRate);
+		isFiniteNonNegative(input.brokerage.sellFeeRate);
 
 	if (!isValidInput) {
 		return undefined;
@@ -271,7 +274,7 @@ export function calculateStockSale(input: StockSaleInput): StockSaleResult | und
 	const soldShares = input.saleLots * LOT_SIZE;
 	const soldCostBasis = soldShares * input.currentAveragePrice;
 	const saleValue = soldShares * input.salePrice;
-	const sellFee = calculateSellFee(saleValue, input.sellFeeRate);
+	const sellFee = calculateSellFee(saleValue, input.brokerage);
 	const netProceeds = saleValue - sellFee;
 	const realizedProfitLoss = netProceeds - soldCostBasis;
 	const realizedProfitLossPercentage =
@@ -323,7 +326,7 @@ export function calculateTargetAverage(input: TargetAverageInput): TargetAverage
 		Number.isFinite(input.purchasePrice) &&
 		input.targetAveragePrice > 0 &&
 		Number.isFinite(input.targetAveragePrice) &&
-		isFiniteNonNegative(input.buyFeeRate);
+		isFiniteNonNegative(input.brokerage.buyFeeRate);
 
 	if (!isValidInput) {
 		return { status: 'unreachable', reason: 'invalid-input' };
@@ -353,7 +356,7 @@ export function calculateTargetAverage(input: TargetAverageInput): TargetAverage
 	const additionalLots = Math.ceil(requiredAdditionalShares / LOT_SIZE);
 	const additionalShares = additionalLots * LOT_SIZE;
 	const purchaseValue = additionalShares * input.purchasePrice;
-	const buyFee = calculateBuyFee(purchaseValue, input.buyFeeRate);
+	const buyFee = calculateBuyFee(purchaseValue, input.brokerage);
 	const cashRequired = purchaseValue + buyFee;
 	const resultingAveragePrice =
 		(currentShares * input.currentAveragePrice + purchaseValue) /

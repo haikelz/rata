@@ -83,7 +83,7 @@
 	let salePrice = $state(342);
 	let targetAveragePrice = $state(380);
 	let affordableLots = $derived(
-		calculateAffordableLots(purchaseBudget, purchasePrice, brokerageFirm.buyFeeRate)
+		calculateAffordableLots(purchaseBudget, purchasePrice, brokerageFirm)
 	);
 	let plannedLots = $derived(purchaseInputMode === 'budget' ? affordableLots : additionalLots);
 
@@ -96,7 +96,7 @@
 					currentMarketPrice,
 					additionalLots: plannedLots,
 					purchasePrice,
-					buyFeeRate: brokerageFirm.buyFeeRate
+					brokerage: brokerageFirm
 				})
 	);
 	let targetSaleLots = $derived(
@@ -104,7 +104,7 @@
 			currentLots,
 			targetProceeds,
 			salePrice,
-			sellFeeRate: brokerageFirm.sellFeeRate
+			brokerage: brokerageFirm
 		})
 	);
 	let plannedSaleLots = $derived(saleInputMode === 'target' ? targetSaleLots : saleLots);
@@ -116,7 +116,7 @@
 					currentAveragePrice,
 					saleLots: plannedSaleLots,
 					salePrice,
-					sellFeeRate: brokerageFirm.sellFeeRate
+					brokerage: brokerageFirm
 				})
 	);
 	let targetResult = $derived(
@@ -124,7 +124,7 @@
 			currentLots,
 			currentAveragePrice,
 			purchasePrice,
-			buyFeeRate: brokerageFirm.buyFeeRate,
+			brokerage: brokerageFirm,
 			targetAveragePrice
 		})
 	);

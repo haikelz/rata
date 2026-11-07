@@ -4,14 +4,14 @@ import {
 	AJAIB_BUY_FEE_RATE,
 	AJAIB_SELL_FEE_RATE,
 	BROKERAGE_FIRMS,
-	STOCKBIT_BUY_FEE_RATE,
-	STOCKBIT_SELL_FEE_RATE,
 	calculateAffordableLots,
 	calculateStockPurchase,
 	calculateStockSale,
 	calculateTargetAverage,
 	calculateTargetSaleLots
 } from './rata';
+
+const { stockbit, ajaib } = BROKERAGE_FIRMS;
 
 describe('calculation safety and zero transactions', () => {
 	const purchase = {
@@ -20,21 +20,21 @@ describe('calculation safety and zero transactions', () => {
 		currentMarketPrice: 450,
 		additionalLots: 1,
 		purchasePrice: 450,
-		buyFeeRate: STOCKBIT_BUY_FEE_RATE
+		brokerage: stockbit
 	};
 	const sale = {
 		currentLots: 10,
 		currentAveragePrice: 500,
 		saleLots: 1,
 		salePrice: 450,
-		sellFeeRate: STOCKBIT_SELL_FEE_RATE
+		brokerage: stockbit
 	};
 	const target = {
 		currentLots: 10,
 		currentAveragePrice: 500,
 		purchasePrice: 450,
 		targetAveragePrice: 480,
-		buyFeeRate: STOCKBIT_BUY_FEE_RATE
+		brokerage: stockbit
 	};
 
 	it.each([NaN, Infinity, -1, 0.01, 1.5, Number.MAX_SAFE_INTEGER])(
@@ -66,7 +66,7 @@ describe('calculation safety and zero transactions', () => {
 					status: 'unreachable',
 					reason: 'invalid-input'
 				});
-			expect(calculateAffordableLots(value, 450, STOCKBIT_BUY_FEE_RATE)).toBeUndefined();
+			expect(calculateAffordableLots(value, 450, stockbit)).toBeUndefined();
 			expect(calculateTargetSaleLots({ ...sale, targetProceeds: value })).toBeUndefined();
 		}
 	);
@@ -81,7 +81,7 @@ describe('calculation safety and zero transactions', () => {
 		expect(
 			calculateTargetSaleLots({ ...sale, currentLots: 1e10, salePrice: 1e10, targetProceeds: 1 })
 		).toBeUndefined();
-		expect(calculateAffordableLots(1e10, 1e-10, STOCKBIT_BUY_FEE_RATE)).toBeUndefined();
+		expect(calculateAffordableLots(1e10, 1e-10, stockbit)).toBeUndefined();
 		expect(
 			calculateTargetAverage({ ...target, currentLots: 1e8, targetAveragePrice: 450.000000000001 })
 		).toEqual({ status: 'unreachable', reason: 'invalid-input' });
@@ -97,7 +97,7 @@ describe('calculation safety and zero transactions', () => {
 				additionalLots: 0
 			})?.finalAveragePrice
 		).toBe(0);
-		expect(calculateAffordableLots(0, 450, AJAIB_BUY_FEE_RATE)).toBe(0);
+		expect(calculateAffordableLots(0, 450, ajaib)).toBe(0);
 		expect(calculateStockSale({ ...sale, saleLots: 0 })).toEqual(
 			expect.objectContaining({
 				netProceeds: 0,
@@ -112,7 +112,7 @@ describe('calculation safety and zero transactions', () => {
 
 describe('calculateTargetSaleLots', () => {
 	it('finds the minimum whole lots that meet net proceeds after Stockbit fees', () => {
-		const input = { currentLots: 297, salePrice: 342, sellFeeRate: STOCKBIT_SELL_FEE_RATE };
+		const input = { currentLots: 297, salePrice: 342, brokerage: stockbit };
 		expect(calculateTargetSaleLots({ ...input, targetProceeds: 2_000_000 })).toBe(59);
 		expect(calculateTargetSaleLots({ ...input, targetProceeds: 34_115 })).toBe(1);
 		expect(calculateTargetSaleLots({ ...input, targetProceeds: 34_116 })).toBe(2);
@@ -120,7 +120,7 @@ describe('calculateTargetSaleLots', () => {
 	});
 
 	it('uses Ajaib fees, caps to holdings, and rejects invalid inputs', () => {
-		const input = { currentLots: 2, salePrice: 342, sellFeeRate: AJAIB_SELL_FEE_RATE };
+		const input = { currentLots: 2, salePrice: 342, brokerage: ajaib };
 		expect(calculateTargetSaleLots({ ...input, targetProceeds: 34_115 })).toBe(2);
 		expect(calculateTargetSaleLots({ ...input, targetProceeds: 1_000_000 })).toBe(2);
 		expect(calculateTargetSaleLots({ ...input, targetProceeds: -1 })).toBeUndefined();
@@ -133,19 +133,19 @@ describe('calculateTargetSaleLots', () => {
 
 describe('calculateAffordableLots', () => {
 	it('buys the maximum whole lots within a budget including Stockbit fees', () => {
-		expect(calculateAffordableLots(2_000_000, 342, STOCKBIT_BUY_FEE_RATE)).toBe(58);
-		expect(calculateAffordableLots(34_251, 342, STOCKBIT_BUY_FEE_RATE)).toBe(1);
-		expect(calculateAffordableLots(34_250, 342, STOCKBIT_BUY_FEE_RATE)).toBe(0);
-		expect(calculateAffordableLots(2_019_424, 284, STOCKBIT_BUY_FEE_RATE)).toBe(71);
-		expect(calculateAffordableLots(2_019_423, 284, STOCKBIT_BUY_FEE_RATE)).toBe(70);
+		expect(calculateAffordableLots(2_000_000, 342, stockbit)).toBe(58);
+		expect(calculateAffordableLots(34_251, 342, stockbit)).toBe(1);
+		expect(calculateAffordableLots(34_250, 342, stockbit)).toBe(0);
+		expect(calculateAffordableLots(2_019_424, 284, stockbit)).toBe(71);
+		expect(calculateAffordableLots(2_019_423, 284, stockbit)).toBe(70);
 	});
 
 	it('adjusts for brokerage fees and handles insufficient or invalid funds', () => {
-		expect(calculateAffordableLots(34_251.5, 342, AJAIB_BUY_FEE_RATE)).toBe(0);
-		expect(calculateAffordableLots(0, 342, STOCKBIT_BUY_FEE_RATE)).toBe(0);
-		expect(calculateAffordableLots(-1, 342, STOCKBIT_BUY_FEE_RATE)).toBeUndefined();
-		expect(calculateAffordableLots(Infinity, 342, STOCKBIT_BUY_FEE_RATE)).toBeUndefined();
-		expect(calculateAffordableLots(100_000, 0, STOCKBIT_BUY_FEE_RATE)).toBeUndefined();
+		expect(calculateAffordableLots(34_251.5, 342, ajaib)).toBe(0);
+		expect(calculateAffordableLots(0, 342, stockbit)).toBe(0);
+		expect(calculateAffordableLots(-1, 342, stockbit)).toBeUndefined();
+		expect(calculateAffordableLots(Infinity, 342, stockbit)).toBeUndefined();
+		expect(calculateAffordableLots(100_000, 0, stockbit)).toBeUndefined();
 	});
 });
 
@@ -154,10 +154,28 @@ describe('brokerage firm rates', () => {
 		expect(BROKERAGE_FIRMS.ajaib).toEqual({
 			name: 'Ajaib',
 			buyFeeRate: AJAIB_BUY_FEE_RATE,
-			sellFeeRate: AJAIB_SELL_FEE_RATE
+			sellFeeRate: AJAIB_SELL_FEE_RATE,
+			roundsFeesDown: false
 		});
 		expect(AJAIB_BUY_FEE_RATE).toBe(0.001513);
 		expect(AJAIB_SELL_FEE_RATE).toBe(0.002513);
+	});
+
+	it('rounds fees by the broker rule, not by the rate value', () => {
+		const sameRateExact = { ...stockbit, name: 'Tarif sama', roundsFeesDown: false };
+		const input = {
+			currentLots: 297,
+			currentAveragePrice: 397,
+			currentMarketPrice: 342,
+			additionalLots: 39,
+			purchasePrice: 342
+		};
+
+		expect(calculateStockPurchase({ ...input, brokerage: stockbit })?.buyFee).toBe(2_000);
+		expect(calculateStockPurchase({ ...input, brokerage: sameRateExact })?.buyFee).toBeCloseTo(
+			2_000.7,
+			6
+		);
 	});
 
 	it('applies the Ajaib rates to purchase and sale estimates', () => {
@@ -167,14 +185,14 @@ describe('brokerage firm rates', () => {
 			currentMarketPrice: 342,
 			additionalLots: 39,
 			purchasePrice: 342,
-			buyFeeRate: BROKERAGE_FIRMS.ajaib.buyFeeRate
+			brokerage: ajaib
 		});
 		const sale = calculateStockSale({
 			currentLots: 297,
 			currentAveragePrice: 397,
 			saleLots: 39,
 			salePrice: 342,
-			sellFeeRate: BROKERAGE_FIRMS.ajaib.sellFeeRate
+			brokerage: ajaib
 		});
 
 		expect(purchase?.buyFee).toBeCloseTo(2_018.0394, 4);
@@ -193,7 +211,7 @@ describe('calculateStockPurchase', () => {
 			currentMarketPrice: 342,
 			additionalLots: 39,
 			purchasePrice: 342,
-			buyFeeRate: STOCKBIT_BUY_FEE_RATE
+			brokerage: stockbit
 		});
 
 		expect(result).toEqual(
@@ -216,9 +234,9 @@ describe('calculateStockPurchase', () => {
 			currentLots: 306,
 			currentAveragePrice: 390.37,
 			currentMarketPrice: 286,
-			additionalLots: calculateAffordableLots(2_023_716, 284, STOCKBIT_BUY_FEE_RATE) ?? -1,
+			additionalLots: calculateAffordableLots(2_023_716, 284, stockbit) ?? -1,
 			purchasePrice: 284,
-			buyFeeRate: STOCKBIT_BUY_FEE_RATE
+			brokerage: stockbit
 		});
 
 		expect(result?.buyFee).toBe(3_024);
@@ -234,7 +252,7 @@ describe('calculateStockPurchase', () => {
 			currentMarketPrice: 450,
 			additionalLots: 1,
 			purchasePrice: 450,
-			buyFeeRate: STOCKBIT_BUY_FEE_RATE
+			brokerage: stockbit
 		});
 
 		expect(result).toBeUndefined();
@@ -248,7 +266,7 @@ describe('calculateStockSale', () => {
 			currentAveragePrice: 397,
 			saleLots: 39,
 			salePrice: 342,
-			sellFeeRate: STOCKBIT_SELL_FEE_RATE
+			brokerage: stockbit
 		});
 
 		expect(result).toEqual(
@@ -274,7 +292,7 @@ describe('calculateStockSale', () => {
 			currentAveragePrice: 500,
 			saleLots: 10,
 			salePrice: 550,
-			sellFeeRate: STOCKBIT_SELL_FEE_RATE
+			brokerage: stockbit
 		});
 
 		expect(result).toEqual(
@@ -296,7 +314,7 @@ describe('calculateStockSale', () => {
 			currentAveragePrice: 500,
 			saleLots: 11,
 			salePrice: 550,
-			sellFeeRate: STOCKBIT_SELL_FEE_RATE
+			brokerage: stockbit
 		});
 
 		expect(result).toBeUndefined();
@@ -309,7 +327,7 @@ describe('calculateTargetAverage', () => {
 			currentLots: 297,
 			currentAveragePrice: 397,
 			purchasePrice: 342,
-			buyFeeRate: STOCKBIT_BUY_FEE_RATE,
+			brokerage: stockbit,
 			targetAveragePrice: 380
 		});
 
@@ -334,7 +352,7 @@ describe('calculateTargetAverage', () => {
 			currentLots: 297,
 			currentAveragePrice: 397,
 			purchasePrice: 342,
-			buyFeeRate: STOCKBIT_BUY_FEE_RATE,
+			brokerage: stockbit,
 			targetAveragePrice: 340
 		});
 
