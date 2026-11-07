@@ -59,14 +59,15 @@
 </svelte:head>
 {@render children()}
 
+<p class="sr-only" role="status">
+	{updateAvailable ? 'Versi baru Rata tersedia. Pilih Perbarui untuk memuat ulang.' : ''}
+</p>
 {#if updateAvailable}
 	<aside
 		aria-labelledby="pwa-update-heading"
 		class="fixed right-4 bottom-4 left-4 z-50 border border-base-300 bg-base-100 p-5 shadow-lg sm:left-auto sm:max-w-sm"
 	>
-		<h2 id="pwa-update-heading" class="font-medium text-base-content" role="status">
-			Versi baru tersedia
-		</h2>
+		<h2 id="pwa-update-heading" class="font-medium text-base-content">Versi baru tersedia</h2>
 		<p class="mt-2 text-sm text-base-content">
 			Memperbarui akan memuat ulang aplikasi dan menghapus input di semua tab Rata yang terbuka.
 		</p>
