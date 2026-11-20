@@ -13,9 +13,9 @@ Live at [rata.ekel.dev](https://rata.ekel.dev).
 These show the default example: 297 lots at an average of Rp397, buying or selling 39 lots at
 Rp342 through Stockbit.
 
-| Buy                                                                                               | Sell                                                                                          |
-| ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| ![Buy tab showing a new average of Rp390,6161 and Rp1.335.800 needed](static/screenshots/buy.png) | ![Sell tab showing Rp1.330.466 net proceeds and a realized loss](static/screenshots/sell.png) |
+| Buy                                                                                               | Sell                                                                                         |
+| ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| ![Buy tab showing a new average of Rp390,6161 and Rp1.335.800 needed](static/screenshots/buy.png) | ![Sell tab showing Rp1.330.466 net proceeds after the sell fee](static/screenshots/sell.png) |
 
 | Dark mode                                            | Mobile                                                                                               |
 | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
