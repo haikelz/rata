@@ -1,0 +1,477 @@
+{
+	"schemaVersion": 2,
+	"generatedAt": "2026-11-20T09:23:37.211Z",
+	"title": "Design System: Rata",
+	"extensions": {
+		"colorMeta": {
+			"paper": {
+				"role": "neutral",
+				"displayName": "Paper",
+				"canonical": "oklch(97% 0 0)",
+				"hex": "#f5f5f5",
+				"tonalRamp": [
+					"oklch(15% 0 0)",
+					"oklch(26% 0 0)",
+					"oklch(37% 0 0)",
+					"oklch(48% 0 0)",
+					"oklch(59% 0 0)",
+					"oklch(70% 0 0)",
+					"oklch(82% 0 0)",
+					"oklch(95% 0 0)"
+				]
+			},
+			"paper-sunk": {
+				"role": "neutral",
+				"displayName": "Paper Sunk",
+				"canonical": "oklch(94% 0 0)",
+				"hex": "#ebebeb",
+				"tonalRamp": [
+					"oklch(15% 0 0)",
+					"oklch(26% 0 0)",
+					"oklch(37% 0 0)",
+					"oklch(48% 0 0)",
+					"oklch(59% 0 0)",
+					"oklch(70% 0 0)",
+					"oklch(82% 0 0)",
+					"oklch(95% 0 0)"
+				]
+			},
+			"rule": {
+				"role": "neutral",
+				"displayName": "Rule",
+				"canonical": "oklch(87% 0 0)",
+				"hex": "#d4d4d4",
+				"tonalRamp": [
+					"oklch(15% 0 0)",
+					"oklch(26% 0 0)",
+					"oklch(37% 0 0)",
+					"oklch(48% 0 0)",
+					"oklch(59% 0 0)",
+					"oklch(70% 0 0)",
+					"oklch(82% 0 0)",
+					"oklch(95% 0 0)"
+				]
+			},
+			"ink": {
+				"role": "neutral",
+				"displayName": "Ink",
+				"canonical": "oklch(17.5% 0 0)",
+				"hex": "#101010",
+				"tonalRamp": [
+					"oklch(15% 0 0)",
+					"oklch(26% 0 0)",
+					"oklch(37% 0 0)",
+					"oklch(48% 0 0)",
+					"oklch(59% 0 0)",
+					"oklch(70% 0 0)",
+					"oklch(82% 0 0)",
+					"oklch(95% 0 0)"
+				]
+			},
+			"ledger-green": {
+				"role": "primary",
+				"displayName": "Ledger Green",
+				"canonical": "oklch(47% 0.105 157)",
+				"hex": "#126c42",
+				"tonalRamp": [
+					"oklch(15% 0.105 157)",
+					"oklch(26% 0.105 157)",
+					"oklch(37% 0.105 157)",
+					"oklch(48% 0.105 157)",
+					"oklch(59% 0.105 157)",
+					"oklch(70% 0.105 157)",
+					"oklch(82% 0.105 157)",
+					"oklch(95% 0.105 157)"
+				]
+			},
+			"ledger-green-content": {
+				"role": "primary",
+				"displayName": "Ledger Green Content",
+				"canonical": "oklch(98% 0.008 157)",
+				"hex": "#f4faf6",
+				"tonalRamp": [
+					"oklch(15% 0.008 157)",
+					"oklch(26% 0.008 157)",
+					"oklch(37% 0.008 157)",
+					"oklch(48% 0.008 157)",
+					"oklch(59% 0.008 157)",
+					"oklch(70% 0.008 157)",
+					"oklch(82% 0.008 157)",
+					"oklch(95% 0.008 157)"
+				]
+			},
+			"tick-amber": {
+				"role": "warning",
+				"displayName": "Tick Amber",
+				"canonical": "oklch(55% 0.12 75)",
+				"hex": "#9a6500",
+				"tonalRamp": [
+					"oklch(15% 0.12 75)",
+					"oklch(26% 0.12 75)",
+					"oklch(37% 0.12 75)",
+					"oklch(48% 0.12 75)",
+					"oklch(59% 0.12 75)",
+					"oklch(70% 0.12 75)",
+					"oklch(82% 0.12 75)",
+					"oklch(95% 0.12 75)"
+				]
+			},
+			"loss-red": {
+				"role": "error",
+				"displayName": "Loss Red",
+				"canonical": "oklch(51% 0.18 27)",
+				"hex": "#b72725",
+				"tonalRamp": [
+					"oklch(15% 0.18 27)",
+					"oklch(26% 0.18 27)",
+					"oklch(37% 0.18 27)",
+					"oklch(48% 0.18 27)",
+					"oklch(59% 0.18 27)",
+					"oklch(70% 0.18 27)",
+					"oklch(82% 0.18 27)",
+					"oklch(95% 0.18 27)"
+				]
+			},
+			"paper-dark": {
+				"role": "neutral",
+				"displayName": "Paper (dark)",
+				"canonical": "oklch(17.5% 0 0)",
+				"hex": "#101010",
+				"tonalRamp": [
+					"oklch(15% 0 0)",
+					"oklch(26% 0 0)",
+					"oklch(37% 0 0)",
+					"oklch(48% 0 0)",
+					"oklch(59% 0 0)",
+					"oklch(70% 0 0)",
+					"oklch(82% 0 0)",
+					"oklch(95% 0 0)"
+				]
+			},
+			"paper-sunk-dark": {
+				"role": "neutral",
+				"displayName": "Paper Sunk (dark)",
+				"canonical": "oklch(21% 0 0)",
+				"hex": "#181818",
+				"tonalRamp": [
+					"oklch(15% 0 0)",
+					"oklch(26% 0 0)",
+					"oklch(37% 0 0)",
+					"oklch(48% 0 0)",
+					"oklch(59% 0 0)",
+					"oklch(70% 0 0)",
+					"oklch(82% 0 0)",
+					"oklch(95% 0 0)"
+				]
+			},
+			"rule-dark": {
+				"role": "neutral",
+				"displayName": "Rule (dark)",
+				"canonical": "oklch(30% 0 0)",
+				"hex": "#2e2e2e",
+				"tonalRamp": [
+					"oklch(15% 0 0)",
+					"oklch(26% 0 0)",
+					"oklch(37% 0 0)",
+					"oklch(48% 0 0)",
+					"oklch(59% 0 0)",
+					"oklch(70% 0 0)",
+					"oklch(82% 0 0)",
+					"oklch(95% 0 0)"
+				]
+			},
+			"ink-dark": {
+				"role": "neutral",
+				"displayName": "Ink (dark)",
+				"canonical": "oklch(97% 0 0)",
+				"hex": "#f5f5f5",
+				"tonalRamp": [
+					"oklch(15% 0 0)",
+					"oklch(26% 0 0)",
+					"oklch(37% 0 0)",
+					"oklch(48% 0 0)",
+					"oklch(59% 0 0)",
+					"oklch(70% 0 0)",
+					"oklch(82% 0 0)",
+					"oklch(95% 0 0)"
+				]
+			},
+			"ledger-green-dark": {
+				"role": "primary",
+				"displayName": "Ledger Green (dark)",
+				"canonical": "oklch(72% 0.13 157)",
+				"hex": "#53bd83",
+				"tonalRamp": [
+					"oklch(15% 0.13 157)",
+					"oklch(26% 0.13 157)",
+					"oklch(37% 0.13 157)",
+					"oklch(48% 0.13 157)",
+					"oklch(59% 0.13 157)",
+					"oklch(70% 0.13 157)",
+					"oklch(82% 0.13 157)",
+					"oklch(95% 0.13 157)"
+				]
+			},
+			"ledger-green-content-dark": {
+				"role": "primary",
+				"displayName": "Ledger Green Content (dark)",
+				"canonical": "oklch(16% 0.025 157)",
+				"hex": "#041009",
+				"tonalRamp": [
+					"oklch(15% 0.025 157)",
+					"oklch(26% 0.025 157)",
+					"oklch(37% 0.025 157)",
+					"oklch(48% 0.025 157)",
+					"oklch(59% 0.025 157)",
+					"oklch(70% 0.025 157)",
+					"oklch(82% 0.025 157)",
+					"oklch(95% 0.025 157)"
+				]
+			},
+			"tick-amber-dark": {
+				"role": "warning",
+				"displayName": "Tick Amber (dark)",
+				"canonical": "oklch(77% 0.12 75)",
+				"hex": "#e1a956",
+				"tonalRamp": [
+					"oklch(15% 0.12 75)",
+					"oklch(26% 0.12 75)",
+					"oklch(37% 0.12 75)",
+					"oklch(48% 0.12 75)",
+					"oklch(59% 0.12 75)",
+					"oklch(70% 0.12 75)",
+					"oklch(82% 0.12 75)",
+					"oklch(95% 0.12 75)"
+				]
+			},
+			"loss-red-dark": {
+				"role": "error",
+				"displayName": "Loss Red (dark)",
+				"canonical": "oklch(70% 0.16 27)",
+				"hex": "#f27166",
+				"tonalRamp": [
+					"oklch(15% 0.16 27)",
+					"oklch(26% 0.16 27)",
+					"oklch(37% 0.16 27)",
+					"oklch(48% 0.16 27)",
+					"oklch(59% 0.16 27)",
+					"oklch(70% 0.16 27)",
+					"oklch(82% 0.16 27)",
+					"oklch(95% 0.16 27)"
+				]
+			}
+		},
+		"typographyMeta": {
+			"answer": {
+				"displayName": "Answer",
+				"purpose": "The single result figure in the result column; 2.75rem below 640px."
+			},
+			"headline": {
+				"displayName": "Headline",
+				"purpose": "Page H1, once per page; 1.875rem below 640px."
+			},
+			"title": {
+				"displayName": "Title",
+				"purpose": "Section headings in the reading-page heading rail."
+			},
+			"band": {
+				"displayName": "Band",
+				"purpose": "Headings inside 48px ruled bands and link-card titles."
+			},
+			"lede": {
+				"displayName": "Lede",
+				"purpose": "Paragraph under a reading-page H1, max 42rem, ink 70%."
+			},
+			"body": {
+				"displayName": "Body",
+				"purpose": "Reading-page prose, max 68ch, ink 75%."
+			},
+			"body-sm": {
+				"displayName": "Body small",
+				"purpose": "Labels (at 500), ledger rows, nav cells, tabs."
+			},
+			"caption": {
+				"displayName": "Caption",
+				"purpose": "Help text, validation, ruler labels, working lines."
+			},
+			"figure": {
+				"displayName": "Figure",
+				"purpose": "Every number; inherits size from context."
+			},
+			"figure-total": {
+				"displayName": "Figure total",
+				"purpose": "Ledger total value, in Ledger Green."
+			}
+		},
+		"shadows": [],
+		"motion": [
+			{
+				"name": "hover-colors",
+				"value": "color, background-color, border-color 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+				"purpose": "Hover fills on nav cells, tabs, disclosure rows and link cards. Removed under reduced motion on tabs."
+			},
+			{
+				"name": "disclosure-toggle",
+				"value": "transform 200ms cubic-bezier(0.22, 1, 0.36, 1)",
+				"purpose": "Plus icon rotates 45deg when a details row opens. None under reduced motion."
+			},
+			{
+				"name": "scroll",
+				"value": "scroll-behavior: smooth",
+				"purpose": "In-page jumps such as the result echo; auto under reduced motion."
+			}
+		],
+		"breakpoints": [
+			{
+				"name": "sm",
+				"value": "640px"
+			},
+			{
+				"name": "lg",
+				"value": "1024px"
+			},
+			{
+				"name": "xl",
+				"value": "1280px"
+			},
+			{
+				"name": "frame",
+				"value": "72rem"
+			}
+		],
+		"focus": {
+			"value": "outline: 2px solid var(--color-primary); outline-offset: 3px",
+			"forcedColors": "outline-color: Highlight"
+		}
+	},
+	"components": [
+		{
+			"name": "Primary Button",
+			"kind": "button",
+			"refersTo": "button-primary",
+			"description": "Green action, once per reading section, routes back to the calculator.",
+			"html": "<button class=\"ds-btn-primary\">Hitung posisimu sendiri</button>",
+			"css": ".ds-btn-primary { min-height: 44px; padding: 0 16px; background: var(--color-primary); color: var(--color-primary-content); border: 1px solid var(--color-primary); border-radius: 0; font: 600 0.875rem 'Geist Variable', ui-sans-serif, sans-serif; cursor: pointer; } .ds-btn-primary:hover { filter: brightness(0.92); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }"
+		},
+		{
+			"name": "Ghost Button",
+			"kind": "button",
+			"refersTo": "button-ghost",
+			"description": "Quiet action such as Reset in the tab row.",
+			"html": "<button class=\"ds-btn-ghost\">Reset contoh</button>",
+			"css": ".ds-btn-ghost { min-height: 44px; padding: 0 12px; background: transparent; color: var(--color-base-content); border: 1px solid transparent; border-radius: 0; font: 400 0.875rem 'Geist Variable', ui-sans-serif, sans-serif; cursor: pointer; transition: background-color 150ms; } .ds-btn-ghost:hover { background: var(--color-base-200); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }"
+		},
+		{
+			"name": "Currency Field",
+			"kind": "input",
+			"refersTo": "input-field",
+			"description": "Label, Rp-prefixed mono input, caption help.",
+			"html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Harga rata-rata</span><span class=\"ds-field-box\"><span class=\"ds-field-prefix\">Rp</span><input value=\"397\" inputmode=\"decimal\"></span><span class=\"ds-field-help\">Pakai koma untuk desimal, misalnya 390,37.</span></label>",
+			"css": ".ds-field { display: grid; gap: 8px; font-family: 'Geist Variable', ui-sans-serif, sans-serif; color: var(--color-base-content); } .ds-field-label { font-size: 0.875rem; font-weight: 500; } .ds-field-box { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; background: var(--color-base-100); border: 1px solid color-mix(in oklab, var(--color-base-content) 20%, transparent); border-radius: 0; } .ds-field-box:focus-within { border-color: var(--color-primary); } .ds-field-prefix { color: color-mix(in oklab, var(--color-base-content) 65%, transparent); } .ds-field-box input { flex: 1; min-width: 0; border: 0; background: transparent; outline: none; font-family: 'Geist Mono Variable', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-size: 1rem; color: inherit; caret-color: var(--color-primary); } .ds-field-help { font-size: 0.75rem; color: color-mix(in oklab, var(--color-base-content) 65%, transparent); }"
+		},
+		{
+			"name": "Ruled Nav",
+			"kind": "nav",
+			"refersTo": "nav-cell",
+			"description": "Static 56px bar, full-height cells divided by rules, 2px green underline on the current page.",
+			"html": "<nav class=\"ds-nav\"><a href=\"#\" aria-current=\"page\">Kalkulator</a><a href=\"#\">Panduan</a><a href=\"#\">Biaya</a></nav>",
+			"css": ".ds-nav { display: flex; height: 56px; border-bottom: 1px solid var(--color-base-300); font: 400 0.875rem 'Geist Variable', ui-sans-serif, sans-serif; } .ds-nav a { display: flex; align-items: center; padding: 0 20px; border-left: 1px solid var(--color-base-300); border-bottom: 2px solid transparent; color: color-mix(in oklab, var(--color-base-content) 65%, transparent); text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-nav a:hover { background: var(--color-base-200); color: var(--color-base-content); } .ds-nav a[aria-current='page'] { border-bottom-color: var(--color-primary); color: var(--color-base-content); } .ds-nav a:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }"
+		},
+		{
+			"name": "Tabs",
+			"kind": "nav",
+			"refersTo": "tab-active",
+			"description": "Mode tabs in a 48px ruled band.",
+			"html": "<div class=\"ds-tabs\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\">Beli saham</button><button role=\"tab\" aria-selected=\"false\">Jual saham</button></div>",
+			"css": ".ds-tabs { display: flex; height: 48px; border-bottom: 1px solid var(--color-base-300); } .ds-tabs button { margin-bottom: -1px; padding: 0 24px; background: transparent; border: 0; border-right: 1px solid var(--color-base-300); border-bottom: 2px solid transparent; border-radius: 0; font: 500 0.875rem 'Geist Variable', ui-sans-serif, sans-serif; color: color-mix(in oklab, var(--color-base-content) 60%, transparent); cursor: pointer; transition: background-color 150ms, color 150ms; } .ds-tabs button:hover { background: var(--color-base-200); color: var(--color-base-content); } .ds-tabs button[aria-selected='true'] { border-bottom-color: var(--color-primary); color: var(--color-base-content); } .ds-tabs button:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }"
+		},
+		{
+			"name": "Ledger",
+			"kind": "custom",
+			"refersTo": "ledger-row",
+			"description": "Ruled definition list with mono values and a green total row.",
+			"html": "<dl class=\"ds-ledger\"><div><dt>Nilai pembelian</dt><dd>Rp1.333.800</dd></div><div><dt>Fee beli Stockbit 0,15%</dt><dd>Rp2.000</dd></div><div class=\"ds-ledger-total\"><dt>Dana yang dibutuhkan</dt><dd>Rp1.335.800</dd></div></dl>",
+			"css": ".ds-ledger { margin: 0; border-top: 1px solid var(--color-base-300); font: 400 0.875rem 'Geist Variable', ui-sans-serif, sans-serif; } .ds-ledger > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--color-base-300); } .ds-ledger dt { color: color-mix(in oklab, var(--color-base-content) 65%, transparent); } .ds-ledger dd { margin: 0; text-align: right; font-family: 'Geist Mono Variable', ui-monospace, monospace; font-variant-numeric: tabular-nums; color: var(--color-base-content); } .ds-ledger .ds-ledger-total { padding: 16px 0 0; border-bottom: 0; } .ds-ledger .ds-ledger-total dt { font-weight: 500; color: var(--color-base-content); } .ds-ledger .ds-ledger-total dd { font-size: 1.25rem; font-weight: 500; color: var(--color-primary); }"
+		},
+		{
+			"name": "Column Band with Arrow Node",
+			"kind": "custom",
+			"refersTo": "column-band",
+			"description": "48px heading band that opens a working column; the square arrow node sits on the right divider.",
+			"html": "<div class=\"ds-band\"><h2>Posisi saat ini</h2><span class=\"ds-band-note\">dari aplikasi broker</span><span class=\"ds-node\" aria-hidden=\"true\"><svg viewBox=\"0 0 12 12\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M4.5 2.5 8 6l-3.5 3.5\"/></svg></span></div>",
+			"css": ".ds-band { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 48px; padding: 0 32px; border-bottom: 1px solid var(--color-base-300); border-right: 1px solid var(--color-base-300); font-family: 'Geist Variable', ui-sans-serif, sans-serif; } .ds-band h2 { margin: 0; font-size: 1rem; font-weight: 500; color: var(--color-base-content); } .ds-band-note { font-size: 0.75rem; color: color-mix(in oklab, var(--color-base-content) 60%, transparent); } .ds-node { position: absolute; top: 24px; right: 0; z-index: 1; display: grid; place-items: center; width: 24px; height: 24px; transform: translate(50%, -50%); background: var(--color-base-100); border: 1px solid var(--color-base-300); color: color-mix(in oklab, var(--color-base-content) 60%, transparent); }"
+		},
+		{
+			"name": "Price Ruler",
+			"kind": "custom",
+			"refersTo": "ledger-green",
+			"description": "Signature scale from order price to old average; moved distance in green, marker at the new average.",
+			"html": "<div class=\"ds-ruler\" aria-hidden=\"true\"><div class=\"ds-ruler-top\"><span style=\"left:90%;translate:-90% 0\"><span class=\"ds-muted\">Rata-rata baru</span><b>Rp390,6161</b></span></div><div class=\"ds-ruler-track\"><i style=\"left:0;height:16px;transform:translateY(50%)\"></i><i style=\"left:10%\"></i><i style=\"left:20%\"></i><i style=\"left:30%\"></i><i style=\"left:40%\"></i><i style=\"left:50%\"></i><i style=\"left:60%\"></i><i style=\"left:70%\"></i><i style=\"left:80%\"></i><i style=\"left:90%\"></i><i style=\"left:100%;height:16px;transform:translateY(50%)\"></i><s></s><em style=\"left:88.4%;width:11.6%\"></em><u style=\"left:88.4%\"></u></div><div class=\"ds-ruler-ends\"><span><span class=\"ds-muted\">Harga beli</span><code>Rp342</code></span><span style=\"text-align:right\"><span class=\"ds-muted\">Rata-rata lama</span><code>Rp397</code></span></div></div>",
+			"css": ".ds-ruler { font: 400 0.75rem 'Geist Variable', ui-sans-serif, sans-serif; color: var(--color-base-content); } .ds-ruler-top { position: relative; height: 36px; } .ds-ruler-top > span { position: absolute; bottom: 4px; white-space: nowrap; } .ds-ruler span > span, .ds-ruler b, .ds-ruler code { display: block; } .ds-muted { color: color-mix(in oklab, var(--color-base-content) 65%, transparent); } .ds-ruler b { font: 500 0.75rem 'Geist Mono Variable', ui-monospace, monospace; color: var(--color-primary); } .ds-ruler code { font-family: 'Geist Mono Variable', ui-monospace, monospace; } .ds-ruler-track { position: relative; height: 16px; } .ds-ruler-track i { position: absolute; bottom: 50%; width: 1px; height: 6px; background: color-mix(in oklab, var(--color-base-content) 25%, transparent); } .ds-ruler-track s { position: absolute; inset: 50% 0 auto; height: 1px; background: color-mix(in oklab, var(--color-base-content) 25%, transparent); } .ds-ruler-track em { position: absolute; top: 50%; height: 4px; transform: translateY(-50%); background: var(--color-primary); } .ds-ruler-track u { position: absolute; top: 0; width: 2px; height: 16px; transform: translateX(-50%); background: var(--color-primary); } .ds-ruler-ends { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; }"
+		}
+	],
+	"narrative": {
+		"northStar": "The Ruled Ledger",
+		"overview": "**Creative North Star: \"The Ruled Ledger\"**\n\nRata looks like a broker's statement printed on plain paper. One framed column, 72rem wide, runs from the top bar to the footer, and its 1px side rails never break. Inside the frame, hairline rules do every job other systems hand to cards, shadows, and spacing: they divide columns, carry section headings, and underline each ledger line. The page has no ornament. Grey carries structure, one green carries the path to the answer, and every figure sits in a monospace with tabular digits so columns of rupiah align to the digit.\n\nDensity is moderate and work-focused. Controls hold a 44px target, labels sit 8px above their fields, and fields stack 20px apart. The two surface types share the frame: the calculator splits it into ruled working columns, and the reading pages split it into a narrow heading rail and a wide text column. Light and dark follow the system setting and swap palettes without changing structure.",
+		"keyCharacteristics": [
+			"One framed column with continuous 1px side rails, including the header bar and footer.",
+			"Square corners on every surface and control.",
+			"Flat: depth comes from a sunk grey tint, never a shadow.",
+			"Geist for words, Geist Mono with tabular digits for every number.",
+			"Green marks the mark, the current location, the action, focus, and the computed total."
+		],
+		"rules": [
+			{
+				"name": "The Green Path Rule",
+				"body": "Green marks where you are, what you can press, where focus sits, and the total the order produces. Labels, borders, backgrounds, and the large answer figure stay neutral.",
+				"section": "colors"
+			},
+			{
+				"name": "The Opacity Ladder Rule",
+				"body": "Secondary text is ink at 75, 70, 65 or 60 percent, never a separate grey token, so both themes stay correct from one class.",
+				"section": "colors"
+			},
+			{
+				"name": "The Mono Figure Rule",
+				"body": "Every number renders in Geist Mono with tabular digits: inputs, ledger values, table cells, fee rates, and figures inside running prose.",
+				"section": "typography"
+			},
+			{
+				"name": "The 500 Ceiling Rule",
+				"body": "Headings, labels and inline emphasis top out at weight 500. Use size, tracking, and ink strength for hierarchy. Button labels are the one exception, at daisyUI's 600.",
+				"section": "typography"
+			},
+			{
+				"name": "The Ruled Frame Rule",
+				"body": "Divide space with 1px rules that touch the frame, never with gaps, floating cards, or margins between panels.",
+				"section": "layout"
+			},
+			{
+				"name": "The Flat Ledger Rule",
+				"body": "No shadows on any surface. A region that must read as recessed takes a paper-sunk tint and a rule border.",
+				"section": "elevation"
+			},
+			{
+				"name": "The Square Rule",
+				"body": "Radius is 0 everywhere, including buttons, fields, the arrow node, and focus outlines.",
+				"section": "shapes"
+			}
+		],
+		"dos": [
+			"Do set every number in Geist Mono with tabular digits, including figures inside prose.",
+			"Do separate regions with 1px rule-colored borders that run to the frame rails.",
+			"Do open working columns, tab rows, and breadcrumbs with a 48px ruled band.",
+			"Do use the `1fr 2.3fr` heading rail for reading sections from 1024px.",
+			"Do step gutters 16px, 24px, 32px at 0, 640px, and 1280px.",
+			"Do express secondary text as ink at 75, 70, 65 or 60 percent opacity.",
+			"Do keep controls at 44px minimum height and focus as a 2px green outline offset 3px."
+		],
+		"donts": [
+			"Don't round any corner; radius is 0 in both themes.",
+			"Don't add box shadows; recess with a paper-sunk tint instead.",
+			"Don't use green for borders, backgrounds, labels, or decoration outside the Green Path Rule.",
+			"Don't set figures in proportional Geist or headings and text emphasis above weight 500.",
+			"Don't float panels inside the frame with gaps or margins between them. "
+		]
+	}
+}

@@ -29,3 +29,8 @@ vite.config.ts.timestamp-*
 /.claude/
 /.cursor/
 /.gemini/
+
+# Impeccable review captures and generated mockups — regenerable evidence, not source.
+/.impeccable/review/
+/.impeccable/mocks/
+/.impeccable/questions/
