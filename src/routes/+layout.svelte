@@ -71,7 +71,7 @@
 
 <header class="border-b border-base-300">
 	<div
-		class="mx-auto flex h-14 max-w-6xl items-stretch justify-between border-x border-base-300 pl-4 sm:pl-6"
+		class="mx-auto flex h-14 max-w-6xl items-stretch justify-between border-x border-base-300 pl-4 sm:pl-6 xl:pl-8"
 	>
 		<a
 			class="flex items-center gap-2.5 no-underline"
@@ -105,7 +105,7 @@
 
 <footer class="border-t border-base-300">
 	<div
-		class="mx-auto grid max-w-6xl gap-x-8 gap-y-5 border-x border-base-300 px-4 py-8 text-sm sm:grid-cols-[1fr_auto] sm:px-6"
+		class="mx-auto grid max-w-6xl gap-x-8 gap-y-5 border-x border-base-300 px-4 py-8 text-sm sm:grid-cols-[1fr_auto] sm:px-6 xl:px-8"
 	>
 		<p class="max-w-md leading-6 text-base-content/70">
 			Rata tidak menyimpan data portofoliomu. Semua hitungan berjalan di browser dan tetap bisa
@@ -135,7 +135,7 @@
 {#if updateAvailable}
 	<aside
 		aria-labelledby="pwa-update-heading"
-		class="fixed right-4 bottom-4 left-4 z-50 border border-base-300 bg-base-100 p-5 shadow-lg sm:left-auto sm:max-w-sm"
+		class="fixed right-4 bottom-4 left-4 z-50 border border-base-300 bg-base-100 p-5 sm:left-auto sm:max-w-sm"
 	>
 		<h2 id="pwa-update-heading" class="font-medium text-base-content">Versi baru tersedia</h2>
 		<p class="mt-2 text-sm text-base-content">

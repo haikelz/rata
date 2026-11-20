@@ -47,31 +47,30 @@
 	}
 </script>
 
-<div class="border-b border-base-300 px-4 sm:px-8 lg:px-12">
-	<div
-		class="grid max-w-md grid-cols-2"
-		role="tablist"
-		aria-label="Jenis transaksi"
-		aria-orientation="horizontal"
-	>
-		{#each tabs as tab, index (tab.value)}
-			<button
-				id={`calculator-tab-${tab.value}`}
-				class={`min-h-12 border-b-2 px-4 py-3 text-sm font-medium transition-colors motion-reduce:transition-none ${
-					value === tab.value
-						? 'border-primary bg-base-200 text-primary'
-						: 'border-transparent text-base-content/50 hover:bg-base-200/40 hover:text-base-content'
-				}`}
-				type="button"
-				role="tab"
-				aria-selected={value === tab.value}
-				aria-controls="calculator-panel"
-				tabindex={value === tab.value ? 0 : -1}
-				onclick={() => selectTab(tab.value)}
-				onkeydown={(event) => handleKeydown(event, index)}
-			>
-				{tab.label}
-			</button>
-		{/each}
-	</div>
+<div
+	class="flex self-stretch"
+	role="tablist"
+	aria-label="Jenis transaksi"
+	aria-orientation="horizontal"
+>
+	{#each tabs as tab, index (tab.value)}
+		<button
+			id={`calculator-tab-${tab.value}`}
+			class={[
+				'-mb-px border-r border-b-2 border-r-base-300 px-3 text-sm font-medium whitespace-nowrap transition-colors motion-reduce:transition-none sm:px-6',
+				value === tab.value
+					? 'border-b-primary text-base-content'
+					: 'border-b-transparent text-base-content/60 hover:bg-base-200 hover:text-base-content'
+			]}
+			type="button"
+			role="tab"
+			aria-selected={value === tab.value}
+			aria-controls="calculator-panel"
+			tabindex={value === tab.value ? 0 : -1}
+			onclick={() => selectTab(tab.value)}
+			onkeydown={(event) => handleKeydown(event, index)}
+		>
+			{tab.label}
+		</button>
+	{/each}
 </div>

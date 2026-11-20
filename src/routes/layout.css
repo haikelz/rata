@@ -107,6 +107,10 @@ summary {
 	background: var(--color-primary);
 }
 
+input {
+	caret-color: var(--color-primary);
+}
+
 .numeric {
 	font-family: 'Geist Mono Variable', ui-monospace, monospace;
 	font-variant-numeric: tabular-nums;
@@ -142,8 +146,7 @@ details[open] .details-toggle {
 }
 
 .details-toggle {
-	font-size: 1.5rem;
-	transition: transform 160ms ease;
+	transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -160,6 +163,11 @@ details[open] .details-toggle {
 	:where(a, button, summary):focus-visible {
 		outline-color: Highlight;
 	}
+}
+
+.input,
+.select {
+	min-height: 2.75rem;
 }
 
 .input:focus-within,
