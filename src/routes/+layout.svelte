@@ -69,7 +69,7 @@
 
 <a class="skip-link" href="#main-content">Lewati ke konten</a>
 
-<header class="sticky top-0 z-10 border-b border-base-300 bg-base-100/95 backdrop-blur">
+<header class="border-b border-base-300">
 	<div
 		class="mx-auto flex h-14 max-w-6xl items-stretch justify-between border-x border-base-300 pl-4 sm:pl-6"
 	>

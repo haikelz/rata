@@ -589,7 +589,7 @@
 	</form>
 
 	<div class="border-b border-base-300 bg-base-200/35 p-4 sm:p-8 lg:p-10">
-		<div class="lg:sticky lg:top-26">
+		<div>
 			<p class="sr-only" aria-live="polite">{resultSummary}</p>
 			<p class="mb-4 text-xs leading-5 text-base-content/65">
 				Fee Stockbit dibulatkan ke bawah ke rupiah penuh. Fee pecahan Ajaib dipertahankan. Nilai
