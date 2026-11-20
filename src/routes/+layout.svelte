@@ -56,6 +56,8 @@
 	<link rel="manifest" href="/manifest.webmanifest" />
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 	<meta name="apple-mobile-web-app-title" content="Rata" />
+	<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f5f5" />
+	<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101010" />
 </svelte:head>
 {@render children()}
 

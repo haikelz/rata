@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { assets, resolve } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import CalculatorTabs, { type CalculatorMode } from '$lib/CalculatorTabs.svelte';
+	import Seo from '$lib/Seo.svelte';
 	import {
 		BROKERAGE_FIRMS,
 		type BrokerageFirmId,
@@ -16,39 +17,34 @@
 		parseAmount
 	} from '$lib/rata';
 
-	const seoTitle = 'Kalkulator Harga Rata-rata, Beli & Jual Saham | Rata';
+	const seoTitle = 'Kalkulator Rata-rata Saham & Average Down | Rata';
 	const seoDescription =
-		'Hitung harga rata-rata, hasil penjualan, total lot, estimasi untung rugi, serta fee beli dan jual Stockbit atau Ajaib langsung di browser secara gratis.';
+		'Hitung harga rata-rata baru saat average down, dana yang dibutuhkan, hasil jual bersih, dan untung rugi dengan fee Stockbit atau Ajaib, langsung di browser.';
 	const brokerageFirmIds: ReadonlyArray<BrokerageFirmId> = ['stockbit', 'ajaib'];
-	let canonicalUrl = $derived(new URL(resolve('/'), page.url).href);
-	let socialImageUrl = $derived(new URL(`${assets}/og-rata.webp`, page.url).href);
-	let structuredData = $derived({
-		'@context': 'https://schema.org',
-		'@type': 'WebApplication',
-		name: 'Rata',
-		alternateName: 'Kalkulator Rata-rata Saham',
-		url: canonicalUrl,
-		image: socialImageUrl,
-		description: seoDescription,
-		applicationCategory: 'FinanceApplication',
-		operatingSystem: 'Any',
-		browserRequirements: 'Requires JavaScript',
-		inLanguage: 'id-ID',
-		isAccessibleForFree: true,
-		offers: {
-			'@type': 'Offer',
-			price: '0',
-			priceCurrency: 'IDR'
-		},
-		featureList: [
-			'Kalkulator harga rata-rata saham',
-			'Estimasi fee beli dan jual Stockbit',
-			'Estimasi fee beli dan jual Ajaib',
-			'Kalkulator target harga rata-rata',
-			'Estimasi untung rugi berjalan'
-		]
-	});
-	let structuredDataJson = $derived(JSON.stringify(structuredData).replaceAll('<', '\\u003c'));
+	let homeUrl = $derived(new URL(resolve('/'), page.url).href);
+	let schema = $derived([
+		{ '@type': 'WebSite', name: 'Rata', url: homeUrl, inLanguage: 'id-ID' },
+		{
+			'@type': 'WebApplication',
+			name: 'Rata',
+			alternateName: 'Kalkulator Rata-rata Saham',
+			url: homeUrl,
+			description: seoDescription,
+			applicationCategory: 'FinanceApplication',
+			operatingSystem: 'Any',
+			browserRequirements: 'Requires JavaScript',
+			inLanguage: 'id-ID',
+			isAccessibleForFree: true,
+			offers: { '@type': 'Offer', price: '0', priceCurrency: 'IDR' },
+			featureList: [
+				'Kalkulator harga rata-rata saham',
+				'Estimasi fee beli dan jual Stockbit',
+				'Estimasi fee beli dan jual Ajaib',
+				'Kalkulator target harga rata-rata',
+				'Estimasi untung rugi berjalan'
+			]
+		}
+	]);
 
 	const rupiahFormatter = new Intl.NumberFormat('id-ID', {
 		style: 'currency',
@@ -260,34 +256,7 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{seoTitle}</title>
-	<meta name="description" content={seoDescription} />
-	<meta name="robots" content="index, follow, max-image-preview:large" />
-	<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f5f5" />
-	<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101010" />
-	<link rel="canonical" href={canonicalUrl} />
-
-	<meta property="og:type" content="website" />
-	<meta property="og:locale" content="id_ID" />
-	<meta property="og:site_name" content="Rata" />
-	<meta property="og:title" content={seoTitle} />
-	<meta property="og:description" content={seoDescription} />
-	<meta property="og:url" content={canonicalUrl} />
-	<meta property="og:image" content={socialImageUrl} />
-	<meta property="og:image:type" content="image/webp" />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content="Rata, kalkulator harga rata-rata saham dan fee beli" />
-
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content={seoTitle} />
-	<meta name="twitter:description" content={seoDescription} />
-	<meta name="twitter:image" content={socialImageUrl} />
-	<meta name="twitter:image:alt" content="Rata, kalkulator harga rata-rata saham dan fee beli" />
-
-	<svelte:element this={"script"} type="application/ld+json">{structuredDataJson}</svelte:element>
-</svelte:head>
+<Seo title={seoTitle} description={seoDescription} {schema} />
 
 {#snippet fieldError(id: keyof typeof errors)}
 	<span
