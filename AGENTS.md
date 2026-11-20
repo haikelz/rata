@@ -21,7 +21,10 @@ Use Bun exclusively and treat `bun.lock` as authoritative.
 
 - Keep financial formulas as pure functions in `src/lib/rata.ts`.
 - Keep formula and boundary tests in `src/lib/rata.spec.ts`.
-- Keep route state and presentation in `src/routes/+page.svelte`.
+- Keep calculator state and presentation in `src/routes/+page.svelte`; the guide and fee notes
+  live in `src/routes/panduan` and `src/routes/biaya`.
+- Set each page's metadata through `src/lib/Seo.svelte` and list new public pages in
+  `src/routes/sitemap.xml/+server.ts`.
 - Keep global design tokens and daisyUI themes in `src/routes/layout.css`.
 - Do not add network requests, storage, analytics, or server-side portfolio processing.
 - Avoid speculative abstractions, stores, services, or directories.

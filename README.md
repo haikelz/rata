@@ -80,6 +80,9 @@ CI runs lint, check, test, and build on pushes to `main` and on pull requests.
 - `src/lib/rata.ts`: pure calculation functions. `rata.spec.ts` tests them, including the
   screenshot values.
 - `src/routes/+page.svelte`: the calculator interface and its state.
+- `src/routes/panduan` and `src/routes/biaya`: the formula guide and the fee notes.
+- `src/routes/+layout.svelte`: the shared header, footer, and update prompt. `src/lib/Seo.svelte`
+  sets each page's title, description, canonical link, and structured data.
 - `src/routes/layout.css`: Tailwind, daisyUI themes, and design tokens.
 - `vite.config.ts`: SvelteKit, PWA, content security policy, and the prerender origin.
 
@@ -94,7 +97,8 @@ CI runs lint, check, test, and build on pushes to `main` and on pull requests.
 
 The build script runs `bun install --frozen-lockfile` before Vite because Pages may not detect the
 text-based `bun.lock`. If you move the site off `rata.ekel.dev`, update `prerender.origin` in
-`vite.config.ts` so the canonical and link-preview URLs point to the new domain.
+`vite.config.ts` so the canonical and link-preview URLs point to the new domain, and update the
+`Sitemap` line in `static/robots.txt`.
 
 ## Privacy and limitations
 
